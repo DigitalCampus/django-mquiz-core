@@ -1,6 +1,0 @@
-{% extends "mquiz/base.html" %}
-
-{% block content %}
-<h2>Logged out</h2>
-You are now logged out. <a href="{% url django.contrib.auth.views.login %}">Log in again</a>
-{% endblock %}
