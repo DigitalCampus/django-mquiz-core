@@ -1,0 +1,24 @@
+<div id="header"> 
+    <div class="content">  
+        <div id="logo"><h1><a href="{% url mquiz-home %}">mQuiz</a></h1></div>
+
+
+        <div id="menu">
+            <ul>
+            <li><a href="{% url mquiz-home %}">Home</a></li>
+            <li><a href="#">My Results</a></li>
+            <li><a href="#">My Quizzes</a></li>
+            <li><a href="#">Browse</a></li>
+            <li><a href="#">Create</a></li>
+            </ul>
+        </div>
+        <div id="login">
+        {% if user.is_authenticated %}
+            <p>Welcome, {{ user.first_name }}. <a href="{% url django.contrib.auth.views.logout %}">Logout</a></p>
+        {% else %}
+            <p>Welcome, please <a href="{% url django.contrib.auth.views.login %}">log in</a> or <a href="{% url profile_register %}">register</a>.</p>
+        {% endif %}
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+</div>
