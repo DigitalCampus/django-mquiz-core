@@ -8,12 +8,9 @@ class Question(models.Model):
     owner = models.ForeignKey(User)
     created_date = models.DateTimeField('date created',default=datetime.now)
     lastupdated_date = models.DateTimeField('date updated',default=datetime.now)
-    title = models.CharField(max_length=500)
-    
+    title = models.CharField(max_length=500)   
     def __unicode__(self):
         return self.title
-    def max_score(self):
-        return 0
 
 class Response(models.Model):
     owner = models.ForeignKey(User)
