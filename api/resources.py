@@ -30,7 +30,7 @@ class QuizQuestionResource(ModelResource):
         resource_name = 'quiz/question'
         
 class QuestionResource(ModelResource):
-    responses = fields.ToManyField('mquiz.api.ResponseResource', 'responses')    
+    responses = fields.ToManyField('mquiz.api.resources.ResponseResource', 'response_set', related_name='question', full=True)   
     class Meta:
         queryset = Question.objects.all()
         allowed_methods = ['get']

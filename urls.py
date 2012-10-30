@@ -2,7 +2,6 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.views.generic.simple import direct_to_template
 from tastypie.api import Api
-
 from mquiz.api.resources import QuizResource, UserResource, QuestionResource, QuizQuestionResource, ResponseResource
 
 v1_api = Api(api_name='v1')
