@@ -1,4 +1,4 @@
-# mquiz/apiauth.py
+# mquiz/api/auth.py
 from tastypie.authorization import Authorization
 
 class MquizAPIAuthorization(Authorization):
