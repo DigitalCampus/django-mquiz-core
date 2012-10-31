@@ -32,16 +32,26 @@ class QuizJSONSerializer(Serializer):
                 sort_keys=True, ensure_ascii=False, indent=self.json_indent)
         
     def format_quiz(self, data):
+        # rename fields
         data['qref'] = data['id']
         del data['id']
         data['quiztitle'] = data['title']
         del data['title']
         data['quizdescription'] = data['description']
         del data['description']
+        data['lastupdate'] = data['lastupdated_date']
+        del data['lastupdated_date']
+        
+        # remove intermediate quizquestion data
         for question in data['q']:
             del question['id']
             del question['order']
             for qkey, qvalue in question['question'].items():
                 question[qkey] = qvalue
             del question['question']
+            # add maxscore for question
+            
+        # add maxscore for quiz
+        data['maxscore'] = 0
+         
         return data  

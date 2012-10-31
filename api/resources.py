@@ -24,7 +24,7 @@ class QuizResource(ModelResource):
     class Meta:
         queryset = Quiz.objects.all()
         allowed_methods = ['get']
-        fields = ['title', 'id', 'description']
+        fields = ['title', 'id', 'description', 'lastupdated_date']
         resource_name = 'quiz'
         include_resource_uri = False
         serializer = QuizJSONSerializer()   

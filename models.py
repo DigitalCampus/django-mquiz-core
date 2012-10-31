@@ -5,10 +5,20 @@ from django.core import serializers
 from datetime import datetime
 
 class Question(models.Model):
+    QUESTION_TYPES = (
+        ('multichoice', 'Multiple choice'),
+        ('shortanswer', 'Short answer'),
+        ('match', 'Matching'),
+        ('numerical', 'Numerical'),
+        ('essay', 'Essay'),
+        ('multiselect', 'Multiple select'),
+        ('info', 'Information only'),
+    )
     owner = models.ForeignKey(User)
     created_date = models.DateTimeField('date created',default=datetime.now)
     lastupdated_date = models.DateTimeField('date updated',default=datetime.now)
-    title = models.CharField(max_length=500)   
+    title = models.CharField(max_length=500)  
+    type = models.CharField(max_length=15,choices=QUESTION_TYPES, default='multichoice') 
     def __unicode__(self):
         return self.title
 
@@ -36,8 +46,6 @@ class Quiz(models.Model):
     
     def __unicode__(self):
         return self.title
-    def max_score(self):
-        return 0
     
 class QuizQuestion(models.Model):
     quiz = models.ForeignKey(Quiz)
