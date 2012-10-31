@@ -24,23 +24,23 @@ class QuizResource(ModelResource):
     class Meta:
         queryset = Quiz.objects.all()
         allowed_methods = ['get']
-        fields = ['title', 'id']
+        fields = ['title', 'id', 'description']
         resource_name = 'quiz'
         include_resource_uri = False
-        serializer = QuizJSONSerializer()
-        
+        serializer = QuizJSONSerializer()   
+    
 class QuizQuestionResource(ModelResource):
     #quiz = fields.ToOneField('mquiz.api.resources.QuizResource', 'quiz', full=True)
     question = fields.ToOneField('mquiz.api.resources.QuestionResource', 'question', full=True)
     class Meta:
         queryset = QuizQuestion.objects.all()
         allowed_methods = ['get']
+        fields = ['id','order']
         include_resource_uri = False
-        serializer = QuizJSONSerializer()
-        
+      
 class QuestionResource(ModelResource):
     #quiz = fields.ToManyField('mquiz.api.resources.QuizQuestionResource', 'quiz', full=True)
-    #r = fields.ToManyField('mquiz.api.resources.ResponseResource', 'response_set', related_name='question', full=True)   
+    r = fields.ToManyField('mquiz.api.resources.ResponseResource', 'response_set', related_name='question', full=True)   
     class Meta:
         queryset = Question.objects.all()
         allowed_methods = ['get']
