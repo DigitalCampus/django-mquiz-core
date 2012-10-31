@@ -22,7 +22,7 @@ class UserResource(ModelResource):
 class QuizResource(ModelResource):
     q = fields.ToManyField('mquiz.api.resources.QuizQuestionResource', 'quizquestion_set', related_name='quiz', full=True)
     class Meta:
-        queryset = Quiz.objects.all()
+        queryset = Quiz.objects.filter(draft=0,deleted=0)
         allowed_methods = ['get']
         fields = ['title', 'id', 'description', 'lastupdated_date']
         resource_name = 'quiz'
@@ -41,6 +41,7 @@ class QuizQuestionResource(ModelResource):
 class QuestionResource(ModelResource):
     #quiz = fields.ToManyField('mquiz.api.resources.QuizQuestionResource', 'quiz', full=True)
     r = fields.ToManyField('mquiz.api.resources.ResponseResource', 'response_set', related_name='question', full=True)   
+    props = fields.ToManyField('mquiz.api.resources.QuestionPropsResource', 'questionprops_set', related_name='question', full=True)
     class Meta:
         queryset = Question.objects.all()
         allowed_methods = ['get']
@@ -57,3 +58,11 @@ class ResponseResource(ModelResource):
         resource_name = 'response'
         include_resource_uri = False
         serializer = PrettyJSONSerializer()
+        
+class QuestionPropsResource(ModelResource):
+    class Meta:
+        queryset = Response.objects.all()
+        allowed_methods = ['get']
+        fields = ['name', 'value']
+        resource_name = 'questionprop'
+        include_resource_uri = False

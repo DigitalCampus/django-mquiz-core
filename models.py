@@ -41,7 +41,6 @@ class Quiz(models.Model):
     deleted = models.BooleanField(default=False)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    props = models.TextField(blank=True)
     questions = models.ManyToManyField(Question, through='QuizQuestion')
     
     def __unicode__(self):
@@ -52,3 +51,19 @@ class QuizQuestion(models.Model):
     question = models.ForeignKey(Question)
     order = models.IntegerField(default=1)
 
+class QuizProps(models.Model):
+    quiz = models.ForeignKey(Quiz)
+    name = models.CharField(max_length=200)
+    value = models.TextField(blank=True)
+    
+    def __unicode__(self):
+        return self.name
+    
+class QuestionProps(models.Model):
+    question = models.ForeignKey(Question)
+    name = models.CharField(max_length=200)
+    value = models.TextField(blank=True)
+    
+    def __unicode__(self):
+        return self.name
+    

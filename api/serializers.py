@@ -44,8 +44,13 @@ class QuizJSONSerializer(Serializer):
         
         # remove intermediate quizquestion data
         for question in data['q']:
+            question['qref'] = question['id']
             del question['id']
+            question['orderno'] = question['order']
             del question['order']
+           # question['text'] = question['title']
+           # del question['title']
+            
             for qkey, qvalue in question['question'].items():
                 question[qkey] = qvalue
             del question['question']
