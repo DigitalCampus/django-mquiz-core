@@ -11,3 +11,4 @@ class MquizAPIAuthorization(Authorization):
             return object_list.filter(username=request.user.username)
 
         return object_list.none()
+    

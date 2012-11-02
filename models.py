@@ -29,7 +29,7 @@ class Response(models.Model):
     lastupdated_date = models.DateTimeField('date updated',default=datetime.now)
     score = models.IntegerField(default=0)
     title = models.CharField(max_length=200)
-    orderno = models.IntegerField(default=1)
+    order = models.IntegerField(default=1)
     def __unicode__(self):
         return self.title
     

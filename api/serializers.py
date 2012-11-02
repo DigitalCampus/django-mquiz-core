@@ -25,38 +25,48 @@ class QuizJSONSerializer(Serializer):
                     self.format_quiz(o)
             data['quizzes'] = data['objects']
             del data['objects']
-        if 'q' in data:
+        if 'questions' in data:
             self.format_quiz(data)
         
         return simplejson.dumps(data, cls=json.DjangoJSONEncoder,
                 sort_keys=True, ensure_ascii=False, indent=self.json_indent)
         
     def format_quiz(self, data):
-        # rename fields
-        data['qref'] = data['id']
-        del data['id']
-        data['quiztitle'] = data['title']
-        del data['title']
-        data['quizdescription'] = data['description']
-        del data['description']
-        data['lastupdate'] = data['lastupdated_date']
-        del data['lastupdated_date']
         
+        qmaxscore = 0.0
         # remove intermediate quizquestion data
-        for question in data['q']:
-            question['qref'] = question['id']
-            del question['id']
-            question['orderno'] = question['order']
-            del question['order']
-           # question['text'] = question['title']
-           # del question['title']
+        for question in data['questions']:
             
             for qkey, qvalue in question['question'].items():
                 question[qkey] = qvalue
             del question['question']
-            # add maxscore for question
+                
             
-        # add maxscore for quiz
-        data['maxscore'] = 0
+            question['p'] = {}
+            if 'props' in question:
+                for p in question['props']:
+                    try:
+                        question['p'][p['name']] = float(p['value'])
+                    except:
+                        question['p'][p['name']] = p['value']
+                question['props'] = question['p']
+                del question['p']
+                try:
+                    float(question['props']['maxscore'])
+                    qmaxscore = qmaxscore + float(question['props']['maxscore'])
+                except:
+                    qmaxscore = qmaxscore
+                
+          
+        # calc maxscore for quiz
+        
+        data['p'] = {}
+        data['p']['maxscore'] = qmaxscore
+        for p in data['props']:
+            data['p'][p['name']] = p['value']
+        data['props'] = data['p']
+        del data['p']  
+        
          
         return data  
+    
