@@ -13,7 +13,7 @@ class PrettyJSONSerializer(Serializer):
      
         
 class QuizJSONSerializer(Serializer):
-    json_indent = 2
+    json_indent = 4
 
     def to_json(self, data, options=None):
         options = options or {}
@@ -36,24 +36,18 @@ class QuizJSONSerializer(Serializer):
         qmaxscore = 0.0
         # remove intermediate quizquestion data
         for question in data['questions']:
-            
-            for qkey, qvalue in question['question'].items():
-                question[qkey] = qvalue
-            del question['question']
-                
-            
-            question['p'] = {}
-            if 'props' in question:
-                for p in question['props']:
+            if 'props' in question['question']:
+                question['question']['p'] = {}
+                for p in question['question']['props']:
                     try:
-                        question['p'][p['name']] = float(p['value'])
+                        question['question']['p'][p['name']] = float(p['value'])
                     except:
-                        question['p'][p['name']] = p['value']
-                question['props'] = question['p']
-                del question['p']
+                        question['question']['p'][p['name']] = p['value']
+                question['question']['props'] = question['question']['p']
+                del question['question']['p']
                 try:
-                    float(question['props']['maxscore'])
-                    qmaxscore = qmaxscore + float(question['props']['maxscore'])
+                    float(question['question']['props']['maxscore'])
+                    qmaxscore = qmaxscore + float(question['question']['props']['maxscore'])
                 except:
                     qmaxscore = qmaxscore
                 

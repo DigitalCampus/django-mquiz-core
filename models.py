@@ -59,6 +59,9 @@ class QuizProps(models.Model):
     def __unicode__(self):
         return self.name
     
+    def is_valid(self):
+        return False
+    
 class QuestionProps(models.Model):
     question = models.ForeignKey(Question)
     name = models.CharField(max_length=200)

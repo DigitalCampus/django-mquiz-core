@@ -1,14 +1,37 @@
 # mquiz/api/resources.py
 from django.contrib.auth.models import User
-from tastypie import fields
+from tastypie import fields, bundle
 from tastypie.resources import ModelResource
 from tastypie.authentication import BasicAuthentication,Authentication
 from tastypie.authorization import Authorization
+from tastypie import http
+from tastypie.exceptions import NotFound, BadRequest, InvalidFilterError, HydrationError, InvalidSortError, ImmediateHttpResponse
 from mquiz.models import Quiz, Question, QuizQuestion, Response, QuestionProps, QuizProps
 from mquiz.api.auth import MquizAPIAuthorization
 from mquiz.api.serializers import PrettyJSONSerializer, QuizJSONSerializer
+from tastypie.validation import Validation
 
 
+class QuizOwnerValidation(Validation):
+    def is_valid(self, bundle, request=None):
+        if not bundle.data:
+            return {'__all__': 'no data.'}
+        errors = {}
+        quiz = QuizResource().get_via_uri(bundle.data['quiz'])
+        if quiz.owner.id != bundle.request.user.id:
+            errors['error_message'] = "You are not the owner of this quiz"
+        return errors
+    
+class QuestionOwnerValidation(Validation):
+    def is_valid(self, bundle, request=None):
+        if not bundle.data:
+            return {'__all__': 'no data.'}
+        errors = {}
+        question = QuestionResource().get_via_uri(bundle.data['question'])
+        if question.owner.id != bundle.request.user.id:
+            errors['error_message'] = "You are not the owner of this question"
+        return errors
+    
 class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
@@ -17,8 +40,7 @@ class UserResource(ModelResource):
         allowed_methods = ['get']
         authentication = BasicAuthentication()
         authorization = MquizAPIAuthorization() 
-        serializer = PrettyJSONSerializer()
-               
+        serializer = PrettyJSONSerializer()       
         
 class QuizResource(ModelResource):
     questions = fields.ToManyField('mquiz.api.resources.QuizQuestionResource', 'quizquestion_set', related_name='quiz', full=True)
@@ -29,20 +51,31 @@ class QuizResource(ModelResource):
         allowed_methods = ['get','post']
         fields = ['title', 'id', 'description', 'lastupdated_date']
         resource_name = 'quiz'
-        include_resource_uri = False
+        include_resource_uri = True
         serializer = QuizJSONSerializer()  
         authentication = BasicAuthentication()
         authorization = Authorization()
+        
+    def hydrate(self, bundle, request=None):
+        bundle.obj.owner = User.objects.get(pk = bundle.request.user.id)
+        return bundle 
     
 class QuizQuestionResource(ModelResource):
     #quiz = fields.ToOneField('mquiz.api.resources.QuizResource', 'quiz', full=True)
     question = fields.ToOneField('mquiz.api.resources.QuestionResource', 'question', full=True)
     class Meta:
         queryset = QuizQuestion.objects.all()
-        allowed_methods = ['get']
-        fields = ['id','order']
-        include_resource_uri = False
+        allowed_methods = ['get','post']
+        fields = ['id','order','question']
+        include_resource_uri = True
+        authentication = BasicAuthentication()
+        authorization = Authorization()
+        validation = QuizOwnerValidation()
       
+    def hydrate(self, bundle, request=None):
+        bundle.obj.quiz_id = QuizResource().get_via_uri(bundle.data['quiz']).id
+        return bundle
+     
 class QuestionResource(ModelResource):
     #quiz = fields.ToManyField('mquiz.api.resources.QuizQuestionResource', 'quiz', full=True)
     responses = fields.ToManyField('mquiz.api.resources.ResponseResource', 'response_set', related_name='question', full=True)   
@@ -57,24 +90,11 @@ class QuestionResource(ModelResource):
         serializer = PrettyJSONSerializer()
         authentication = BasicAuthentication()
         authorization = Authorization()
-     
-    #def obj_create(self, bundle, request=None, **kwargs):
-    #    bundle = self.full_hydrate(bundle, request)
-     #   return bundle
 
-    #def obj_update(self, bundle, request=None, **kwargs):
-    #    bundle = self.full_hydrate(bundle, request)
-    #    return bundle
-          
-    #def full_hydrate(self, bundle, request=None):
-    #    bundle = self.hydrate(bundle, request)
-    #    return bundle
+    def hydrate(self, bundle, request=None):
+        bundle.obj.owner = User.objects.get(pk = bundle.request.user.id)
+        return bundle   
     
-   # def hydrate(self, bundle, request=None):
-        #bundle.obj.owner = User.objects.get(pk = request.user.id)
-        #bundle.obj.owner = request.user.id
-     #   return bundle
-        
 class ResponseResource(ModelResource):
     class Meta:
         queryset = Response.objects.all()
@@ -86,18 +106,28 @@ class ResponseResource(ModelResource):
         authentication = BasicAuthentication()
         
 class QuestionPropsResource(ModelResource):
+    question = fields.ForeignKey(QuestionResource, 'question')
     class Meta:
         queryset = QuestionProps.objects.all()
-        allowed_methods = ['get']
+        allowed_methods = ['get','post']
         fields = ['name', 'value']
-        resource_name = 'questionprop'
+        resource_name = 'questionprops'
         include_resource_uri = False
-        
+        authentication = BasicAuthentication()  
+        authorization = Authorization()
+        validation = QuestionOwnerValidation()
+           
 class QuizPropsResource(ModelResource):
+    quiz = fields.ForeignKey(QuizResource, 'quiz')
     class Meta:
         queryset = QuizProps.objects.all()
-        allowed_methods = ['get']
+        allowed_methods = ['get','post']
         fields = ['name', 'value']
-        resource_name = 'quizprop'
+        resource_name = 'quizprops'
         include_resource_uri = False
+        authentication = BasicAuthentication()  
+        authorization = Authorization()
+        validation = QuizOwnerValidation()
+        
+
         
