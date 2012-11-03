@@ -6,7 +6,7 @@ from tastypie.authentication import BasicAuthentication,Authentication
 from tastypie.authorization import Authorization
 from tastypie import http
 from tastypie.exceptions import NotFound, BadRequest, InvalidFilterError, HydrationError, InvalidSortError, ImmediateHttpResponse
-from mquiz.models import Quiz, Question, QuizQuestion, Response, QuestionProps, QuizProps
+from mquiz.models import Quiz, Question, QuizQuestion, Response, QuestionProps, QuizProps, ResponseProps
 from mquiz.api.auth import MquizAPIAuthorization
 from mquiz.api.serializers import PrettyJSONSerializer, QuizJSONSerializer
 from tastypie.validation import Validation
@@ -32,6 +32,16 @@ class QuestionOwnerValidation(Validation):
             errors['error_message'] = "You are not the owner of this question"
         return errors
     
+class ResponseOwnerValidation(Validation):
+    def is_valid(self, bundle, request=None):
+        if not bundle.data:
+            return {'__all__': 'no data.'}
+        errors = {}
+        response = ResponseResource().get_via_uri(bundle.data['response'])
+        if response.owner.id != bundle.request.user.id:
+            errors['error_message'] = "You are not the owner of this response"
+        return errors 
+   
 class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
@@ -100,6 +110,7 @@ class QuestionResource(ModelResource):
     
 class ResponseResource(ModelResource):
     question = fields.ForeignKey(QuestionResource, 'question')
+    props = fields.ToManyField('mquiz.api.resources.ResponsePropsResource', 'responseprops_set', related_name='response', full=True)
     class Meta:
         queryset = Response.objects.all()
         allowed_methods = ['get','post']
@@ -141,6 +152,18 @@ class QuizPropsResource(ModelResource):
         authorization = Authorization()
         validation = QuizOwnerValidation()
         always_return_data = True
-        
+   
+class ResponsePropsResource(ModelResource):
+    response = fields.ForeignKey(ResponseResource, 'response')
+    class Meta:
+        queryset = ResponseProps.objects.all()
+        allowed_methods = ['get','post']
+        fields = ['name', 'value']
+        resource_name = 'responseprops'
+        include_resource_uri = False
+        authentication = BasicAuthentication()  
+        authorization = Authorization()
+        validation = ResponseOwnerValidation()
+        always_return_data = True     
 
         

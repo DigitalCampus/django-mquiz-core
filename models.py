@@ -17,7 +17,7 @@ class Question(models.Model):
     owner = models.ForeignKey(User)
     created_date = models.DateTimeField('date created',default=datetime.now)
     lastupdated_date = models.DateTimeField('date updated',default=datetime.now)
-    title = models.CharField(max_length=500)  
+    title = models.TextField(blank=False)  
     type = models.CharField(max_length=15,choices=QUESTION_TYPES, default='multichoice') 
     def __unicode__(self):
         return self.title
@@ -28,7 +28,7 @@ class Response(models.Model):
     created_date = models.DateTimeField('date created',default=datetime.now)
     lastupdated_date = models.DateTimeField('date updated',default=datetime.now)
     score = models.IntegerField(default=0)
-    title = models.CharField(max_length=200,blank=False)
+    title = models.TextField(blank=False)
     order = models.IntegerField(default=1)
     def __unicode__(self):
         return self.title
@@ -39,7 +39,7 @@ class Quiz(models.Model):
     lastupdated_date = models.DateTimeField('date updated',default=datetime.now)
     draft = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
-    title = models.CharField(max_length=200)
+    title = models.TextField(blank=False)
     description = models.TextField(blank=True)
     questions = models.ManyToManyField(Question, through='QuizQuestion')
     
@@ -59,11 +59,16 @@ class QuizProps(models.Model):
     def __unicode__(self):
         return self.name
     
-    def is_valid(self):
-        return False
-    
 class QuestionProps(models.Model):
     question = models.ForeignKey(Question)
+    name = models.CharField(max_length=200)
+    value = models.TextField(blank=True)
+    
+    def __unicode__(self):
+        return self.name
+    
+class ResponseProps(models.Model):
+    response = models.ForeignKey(Response)
     name = models.CharField(max_length=200)
     value = models.TextField(blank=True)
     
