@@ -55,6 +55,7 @@ class QuizResource(ModelResource):
         serializer = QuizJSONSerializer()  
         authentication = BasicAuthentication()
         authorization = Authorization()
+        always_return_data = True
         
     def hydrate(self, bundle, request=None):
         bundle.obj.owner = User.objects.get(pk = bundle.request.user.id)
@@ -71,6 +72,7 @@ class QuizQuestionResource(ModelResource):
         authentication = BasicAuthentication()
         authorization = Authorization()
         validation = QuizOwnerValidation()
+        always_return_data = True
       
     def hydrate(self, bundle, request=None):
         bundle.obj.quiz_id = QuizResource().get_via_uri(bundle.data['quiz']).id
@@ -90,20 +92,29 @@ class QuestionResource(ModelResource):
         serializer = PrettyJSONSerializer()
         authentication = BasicAuthentication()
         authorization = Authorization()
+        always_return_data = True
 
     def hydrate(self, bundle, request=None):
         bundle.obj.owner = User.objects.get(pk = bundle.request.user.id)
         return bundle   
     
 class ResponseResource(ModelResource):
+    question = fields.ForeignKey(QuestionResource, 'question')
     class Meta:
         queryset = Response.objects.all()
         allowed_methods = ['get','post']
-        fields = ['id','question','order', 'title','score']
+        fields = ['id','order', 'title','score']
         resource_name = 'response'
         include_resource_uri = True
         serializer = PrettyJSONSerializer()
         authentication = BasicAuthentication()
+        authorization = Authorization()
+        validation = QuestionOwnerValidation()
+        always_return_data = True
+        
+    def hydrate(self, bundle, request=None):
+        bundle.obj.owner = User.objects.get(pk = bundle.request.user.id)
+        return bundle 
         
 class QuestionPropsResource(ModelResource):
     question = fields.ForeignKey(QuestionResource, 'question')
@@ -116,6 +127,7 @@ class QuestionPropsResource(ModelResource):
         authentication = BasicAuthentication()  
         authorization = Authorization()
         validation = QuestionOwnerValidation()
+        always_return_data = True
            
 class QuizPropsResource(ModelResource):
     quiz = fields.ForeignKey(QuizResource, 'quiz')
@@ -128,6 +140,7 @@ class QuizPropsResource(ModelResource):
         authentication = BasicAuthentication()  
         authorization = Authorization()
         validation = QuizOwnerValidation()
+        always_return_data = True
         
 
         

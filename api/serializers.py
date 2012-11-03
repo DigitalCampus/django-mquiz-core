@@ -3,7 +3,7 @@ from django.utils import simplejson
 from tastypie.serializers import Serializer
 
 class PrettyJSONSerializer(Serializer):
-    json_indent = 2
+    json_indent = 4
 
     def to_json(self, data, options=None):
         options = options or {}
@@ -21,13 +21,14 @@ class QuizJSONSerializer(Serializer):
     
         if 'objects' in data:
             for o in data['objects']:
-                if 'q' in o:
-                    self.format_quiz(o)
+                self.format_quiz(o)
             data['quizzes'] = data['objects']
             del data['objects']
         if 'questions' in data:
             self.format_quiz(data)
         
+        #return simplejson.dumps(data, cls=json.DjangoJSONEncoder,
+         #       sort_keys=True)
         return simplejson.dumps(data, cls=json.DjangoJSONEncoder,
                 sort_keys=True, ensure_ascii=False, indent=self.json_indent)
         
