@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html manifest="/static/mquiz/mobile/mquiz.appcache">
+<head>
+    <title>mQuiz</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <link rel="StyleSheet" href="/static/mquiz/mobile/mquiz-core.css" type="text/css" media="screen">
+    <link rel="StyleSheet" href="/static/mquiz/mobile/mquiz-local.css" type="text/css" media="screen">
+    <script type="text/javascript" src="/static/mquiz/mobile/lib/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="/static/mquiz/mobile/lib/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/static/mquiz/mobile/lib/jquery-ui-1.8.19.custom.min.js"></script>
+    <script type="text/javascript" src="/static/mquiz/mobile/mquiz.js"></script>
+    <script type="text/javascript" src="/static/mquiz/mobile/dateformat.js"></script>
+    <script type="text/javascript" src="/static/mquiz/mobile/mquizengine.js"></script>
+</head>
+<body onload="init()" onhashchange="init()">
+<div id="content">
+	<div id="header">
+		<div id="header-title" onclick="mQ.confirmExitQuiz('#home')" class="clickable">
+			<h1 id="mobile_app_title">mQuiz</h1>
+		</div>
+		<div id="header-right">
+			<div id="langchange">
+				<!-- select id="changelang" onchange="changeLang()">
+					<option value="EN">English</option>
+				</select -->
+			</div>
+			<div id="logininfo">
+			</div>
+		</div>
+		<div style="clear:both;"></div>
+	</div> <!-- end #header -->
+	<div id="mq">
+	</div> <!-- end #content -->
+	<div id="footer">
+		
+	</div>
+</div> <!-- end #page -->
+</body>
+</html>
