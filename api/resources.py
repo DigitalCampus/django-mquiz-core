@@ -19,6 +19,7 @@ class QuizOwnerValidation(Validation):
         errors = {}
         quiz = QuizResource().get_via_uri(bundle.data['quiz'])
         if quiz.owner.id != bundle.request.user.id:
+            # TODO translation
             errors['error_message'] = "You are not the owner of this quiz"
         return errors
     
@@ -29,6 +30,7 @@ class QuestionOwnerValidation(Validation):
         errors = {}
         question = QuestionResource().get_via_uri(bundle.data['question'])
         if question.owner.id != bundle.request.user.id:
+            # TODO translation
             errors['error_message'] = "You are not the owner of this question"
         return errors
     
@@ -39,6 +41,7 @@ class ResponseOwnerValidation(Validation):
         errors = {}
         response = ResponseResource().get_via_uri(bundle.data['response'])
         if response.owner.id != bundle.request.user.id:
+            # TODO translation
             errors['error_message'] = "You are not the owner of this response"
         return errors 
    
