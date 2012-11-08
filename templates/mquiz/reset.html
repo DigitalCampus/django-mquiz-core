@@ -8,12 +8,12 @@
     <div class="errorWrapper">{{ form.non_field_errors }}</div>
     <div class="fieldWrapper">
         <div class="fieldErrorWrapper">{{ form.email.errors }}</div>
-        <div class="fieldLabelWrapper"><label for="id_email">Email:</label></div>
+        <div class="fieldLabelWrapper"><label for="id_email">{% trans 'form_field_email' %}</label></div>
         <div class="fieldInputWrapper">{{ form.email }}</div>
     </div>
     <div class="fieldWrapper">
         <div class="fieldLabelWrapper">&nbsp;</div>
-        <div class="fieldInputWrapper"><input type="submit" value="Reset" /></div>
+        <div class="fieldInputWrapper"><input type="submit" value="{% trans 'button_reset_password' %}" /></div>
     </div>
 
 </form>

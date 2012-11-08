@@ -1,5 +1,0 @@
-{% extends "base.html" %}
-{% load i18n %}
-{% block content %}
-<h2>{% trans 'page_title_create_quiz' %}</h2>
-{% endblock %}

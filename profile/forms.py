@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
 class RegisterForm(forms.Form):
+    username = forms.CharField(max_length=30)
     email = forms.CharField(validators=[validate_email],
         error_messages={'invalid': _(u'Please enter a valid e-mail address.')},
         required=True)

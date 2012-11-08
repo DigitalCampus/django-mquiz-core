@@ -11,15 +11,16 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid(): # All validation rules pass
             # Create new user
+            username = form.cleaned_data.get("username")
             email = form.cleaned_data.get("email")
             password = form.cleaned_data.get("password")
             first_name = form.cleaned_data.get("first_name")
             last_name = form.cleaned_data.get("last_name")
-            user = User.objects.create_user(email, email, password)
+            user = User.objects.create_user(username, email, password)
             user.first_name = first_name
             user.last_name = last_name
             user.save()
-            u = authenticate(username=email, password=password)
+            u = authenticate(username=username, password=password)
             if u is not None:
                 if u.is_active:
                     login(request, u)

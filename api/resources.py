@@ -6,7 +6,7 @@ from tastypie.authentication import BasicAuthentication,Authentication
 from tastypie.authorization import Authorization
 from tastypie import http
 from tastypie.exceptions import NotFound, BadRequest, InvalidFilterError, HydrationError, InvalidSortError, ImmediateHttpResponse
-from mquiz.models import Quiz, Question, QuizQuestion, Response, QuestionProps, QuizProps, ResponseProps
+from mquiz.models import Quiz, Question, QuizQuestion, Response, QuestionProps, QuizProps, ResponseProps, QuizAttempt, QuizAttemptResponse
 from mquiz.api.auth import MquizAPIAuthorization
 from mquiz.api.serializers import PrettyJSONSerializer, QuizJSONSerializer
 from tastypie.validation import Validation
@@ -167,12 +167,42 @@ class ResponsePropsResource(ModelResource):
         always_return_data = True     
 
 class RegisterResource(ModelResource):
+    # TODO - get working!
     class Meta:
         queryset = User.objects.all()
         resource_name = 'register'
-        fields = ['first_name', 'last_name', 'last_login','username']
         allowed_methods = ['post']
         #authentication = Authentication()
         authorization = Authorization() 
         serializer = PrettyJSONSerializer()  
         always_return_data = True     
+ 
+class QuizAttemptResponseResource(ModelResource):
+    class Meta:
+        queryset = QuizAttemptResponse.objects.all()
+        resource_name = 'submitresponse'
+        allowed_methods = ['post']
+        authentication = BasicAuthentication()
+        authorization = Authorization() 
+        serializer = PrettyJSONSerializer()  
+        always_return_data = True 
+           
+class QuizAttemptResource(ModelResource):
+    # TODO - check that the question is in the quiz
+    # TODO - how to get the quizattempt id for each response in the hydrate
+    quiz = fields.ForeignKey(QuizResource, 'quiz')
+    user = fields.ForeignKey(UserResource, 'user')
+    responses = fields.ToManyField('mquiz.api.resources.QuizAttemptResponseResource', 'quizattemptresponse_set', related_name='quizattempt', full=True)
+    class Meta:
+        queryset = QuizAttempt.objects.all()
+        resource_name = 'submit'
+        allowed_methods = ['post']
+        authentication = BasicAuthentication()
+        authorization = Authorization() 
+        serializer = PrettyJSONSerializer()  
+        always_return_data = True
+         
+    def hydrate(self, bundle, request=None):
+        bundle.obj.user = User.objects.get(pk = bundle.request.user.id)
+        bundle.data['quiz'] = Quiz.objects.get(pk = bundle.data['quiz'])
+        return bundle 
