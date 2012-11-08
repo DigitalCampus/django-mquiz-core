@@ -75,3 +75,16 @@ class ResponseProps(models.Model):
     def __unicode__(self):
         return self.name
     
+class QuizAttempt(models.Model):
+    user = models.ForeignKey(User)
+    quiz = models.ForeignKey(Quiz)
+    attempt_date = models.DateTimeField('date attempted',default=datetime.now)
+    submitted_date = models.DateTimeField('date submitted',default=datetime.now)
+    score = models.IntegerField()
+    maxscore = models.IntegerField()
+    
+class QuizAttemptResponse(models.Model):
+    quizattempt = models.ForeignKey(QuizAttempt)
+    question = models.ForeignKey(Question)
+    score = models.IntegerField()
+    text = models.TextField(blank=True)
