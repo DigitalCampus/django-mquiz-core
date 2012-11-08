@@ -25,6 +25,7 @@ urlpatterns = patterns('',
     url(r'^about/contact/$', direct_to_template, {"template": "mquiz/contact.html",}, name="mquiz_contact"),
     url(r'^create/$', 'mquiz.views.create', name="mquiz_create"),
     url(r'^m/', include('mquiz.mobile.urls')),
+    url(r'^profile/', include('mquiz.profile.urls')),
     (r'^api/', include(v1_api.urls)),
 
     
