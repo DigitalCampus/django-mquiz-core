@@ -1,6 +1,7 @@
-# mquiz_api/resources.py
+# mquiz/api/resources.py
 # TODO - tidy these imports
 from django.contrib.auth.models import User
+from django.contrib.auth import (authenticate, login)
 from tastypie import fields, bundle
 from tastypie.resources import ModelResource
 from tastypie.authentication import BasicAuthentication,Authentication
@@ -171,6 +172,7 @@ class ResponsePropsResource(ModelResource):
         validation = ResponseOwnerValidation()
         always_return_data = True     
 
+
 class RegisterResource(ModelResource):
     # TODO - get working!
     class Meta:
@@ -180,18 +182,53 @@ class RegisterResource(ModelResource):
         #authentication = Authentication()
         authorization = Authorization() 
         serializer = PrettyJSONSerializer()  
-        always_return_data = False  
-    
+        always_return_data = False 
+         
     def obj_create(self, bundle, request=None, **kwargs):
+        # TODO - must be a better way to do this...
         try:
             username = bundle.data['username']
+        except KeyError:
+            # TODO translation
+            raise BadRequest('Please supply a username')
+        try:
             password = bundle.data['password']
+        except KeyError:
+            # TODO translation
+            raise BadRequest('Please supply a password')
+        try:
+            password_again = bundle.data['passwordagain']
+        except KeyError:
+            # TODO translation
+            raise BadRequest('Please supply a password again')
+        try:
             email = bundle.data['email']
         except KeyError:
             # TODO translation
-            raise BadRequest('Please supply username, password, email, first & last names')
+            raise BadRequest('Please supply an email')
         try:
-            bundle.obj = User.objects.create_user(username, '', password)
+            first_name = bundle.data['firstname']
+        except KeyError:
+            # TODO translation
+            raise BadRequest('Please supply a first name')  
+        try:
+            last_name = bundle.data['lastname']
+        except KeyError:
+            # TODO translation
+            raise BadRequest('Please supply a last name') 
+        # TODO check firstname and lastname longer than 2
+        # TODO check valid email address
+        # TODO check passwords match
+        # TODO check password longer than 6
+        try:
+            bundle.obj = User.objects.create_user(username, email, password)
+            bundle.obj.first_name = first_name
+            bundle.obj.last_name = last_name
+            bundle.obj.save()
+            u = authenticate(username=username, password=password)
+            if u is not None:
+                if u.is_active:
+                    login(bundle.request, u)
         except IntegrityError:
             # TODO translation
             raise BadRequest('That username already exists')
