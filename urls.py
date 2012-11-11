@@ -27,7 +27,8 @@ urlpatterns = patterns('',
     url(r'^create/$', 'mquiz.views.create', name="mquiz_create"),
     url(r'^m/', include('mquiz.mobile.urls')),
     url(r'^profile/', include('mquiz.profile.urls')),
-    (r'^api/', include(v1_api.urls)),
+    # TODO customise name (currently api_v1_top_level)
+    url(r'^api/', include(v1_api.urls), name="mquiz_api"),
 
     
 

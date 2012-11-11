@@ -1,4 +1,5 @@
 # mquiz_api/resources.py
+# TODO - tidy these imports
 from django.contrib.auth.models import User
 from tastypie import fields, bundle
 from tastypie.resources import ModelResource
@@ -10,6 +11,7 @@ from mquiz.models import Quiz, Question, QuizQuestion, Response, QuestionProps, 
 from mquiz.api.auth import MquizAPIAuthorization
 from mquiz.api.serializers import PrettyJSONSerializer, QuizJSONSerializer
 from tastypie.validation import Validation
+from django.db import IntegrityError
 
 
 class QuizOwnerValidation(Validation):
@@ -178,7 +180,22 @@ class RegisterResource(ModelResource):
         #authentication = Authentication()
         authorization = Authorization() 
         serializer = PrettyJSONSerializer()  
-        always_return_data = True     
+        always_return_data = False  
+    
+    def obj_create(self, bundle, request=None, **kwargs):
+        try:
+            username = bundle.data['username']
+            password = bundle.data['password']
+            email = bundle.data['email']
+        except KeyError:
+            # TODO translation
+            raise BadRequest('Please supply username, password, email, first & last names')
+        try:
+            bundle.obj = User.objects.create_user(username, '', password)
+        except IntegrityError:
+            # TODO translation
+            raise BadRequest('That username already exists')
+        return bundle   
  
 class QuizAttemptResponseResource(ModelResource):
     class Meta:
