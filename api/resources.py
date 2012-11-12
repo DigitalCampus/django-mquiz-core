@@ -10,7 +10,7 @@ from tastypie import http
 from tastypie.exceptions import NotFound, BadRequest, InvalidFilterError, HydrationError, InvalidSortError, ImmediateHttpResponse
 from mquiz.models import Quiz, Question, QuizQuestion, Response, QuestionProps, QuizProps, ResponseProps, QuizAttempt, QuizAttemptResponse
 from mquiz.api.auth import MquizAPIAuthorization
-from mquiz.api.serializers import PrettyJSONSerializer, QuizJSONSerializer
+from mquiz.api.serializers import PrettyJSONSerializer, QuizJSONSerializer, UserJSONSerializer
 from tastypie.validation import Validation
 from django.db import IntegrityError
 
@@ -56,7 +56,7 @@ class UserResource(ModelResource):
         allowed_methods = ['get']
         authentication = BasicAuthentication()
         authorization = MquizAPIAuthorization() 
-        serializer = PrettyJSONSerializer()       
+        serializer = UserJSONSerializer()       
         
 class QuizResource(ModelResource):
     questions = fields.ToManyField('mquiz.api.resources.QuizQuestionResource', 'quizquestion_set', related_name='quiz', full=True)
