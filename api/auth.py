@@ -1,16 +1,6 @@
 # mquiz/api/auth.py
-from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
 
-class MquizAPIAuthentication(Authentication):
-    def is_authenticated(self, request, **kwargs):
-        if 'alex' in request.user.username:
-            return True
-        return False
-
-    # Optional but recommended
-    def get_identifier(self, request):
-        return request.user.username
 
 class MquizAPIAuthorization(Authorization):
     def is_authorized(self, request, object=None):

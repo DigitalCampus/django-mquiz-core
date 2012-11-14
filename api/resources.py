@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import (authenticate, login)
 from tastypie import fields, bundle
 from tastypie.resources import ModelResource
-from tastypie.authentication import BasicAuthentication,Authentication
+from tastypie.authentication import Authentication, ApiKeyAuthentication
 from tastypie.authorization import Authorization
 from tastypie import http
 from tastypie.exceptions import NotFound, BadRequest, InvalidFilterError, HydrationError, InvalidSortError, ImmediateHttpResponse
@@ -13,7 +13,9 @@ from mquiz.api.auth import MquizAPIAuthorization
 from mquiz.api.serializers import PrettyJSONSerializer, QuizJSONSerializer, UserJSONSerializer
 from tastypie.validation import Validation
 from django.db import IntegrityError
+from tastypie.models import ApiKey
 
+#class LoginResource(Resource):
 
 class QuizOwnerValidation(Validation):
     def is_valid(self, bundle, request=None):
@@ -49,15 +51,36 @@ class ResponseOwnerValidation(Validation):
         return errors 
    
 class UserResource(ModelResource):
+    #api_key = fields.ToOneField('mquiz.api.resources.QuestionResource', 'user', full=True)
     class Meta:
         queryset = User.objects.all()
         resource_name = 'user'
         fields = ['first_name', 'last_name', 'last_login','username']
-        allowed_methods = ['get']
-        authentication = BasicAuthentication()
+        allowed_methods = ['post']
+        authentication = Authentication()
         authorization = MquizAPIAuthorization() 
-        serializer = UserJSONSerializer()       
+        serializer = UserJSONSerializer()
+        always_return_data = True       
+    
+    def obj_create(self, bundle, request=None, **kwargs):
+        username = bundle.data['username']
+        password = bundle.data['password']
+        if not username or not password:
+            return self._unauthorized()
+        try:
+            u = authenticate(username=username, password=password)
+            # TODO - login user
+        except (User.DoesNotExist, User.MultipleObjectsReturned):
+            return self._unauthorized()
+
+        # TODO Change to delete key (remove completely, not just empty
+        bundle.data['password'] = ''
+        key = ApiKey.objects.get(user = u)
+        bundle.data['api_key'] = key.key
+        bundle.obj = u
+        return bundle 
         
+          
 class QuizResource(ModelResource):
     questions = fields.ToManyField('mquiz.api.resources.QuizQuestionResource', 'quizquestion_set', related_name='quiz', full=True)
     props = fields.ToManyField('mquiz.api.resources.QuizPropsResource', 'quizprops_set', related_name='quiz', full=True)
@@ -69,7 +92,7 @@ class QuizResource(ModelResource):
         resource_name = 'quiz'
         include_resource_uri = True
         serializer = QuizJSONSerializer()  
-        authentication = BasicAuthentication()
+        authentication = ApiKeyAuthentication()
         authorization = Authorization()
         always_return_data = True
         
@@ -85,7 +108,7 @@ class QuizQuestionResource(ModelResource):
         allowed_methods = ['get','post']
         fields = ['id','order','question']
         include_resource_uri = True
-        authentication = BasicAuthentication()
+        authentication = ApiKeyAuthentication()
         authorization = Authorization()
         validation = QuizOwnerValidation()
         always_return_data = True
@@ -106,7 +129,7 @@ class QuestionResource(ModelResource):
         resource_name = 'question'
         include_resource_uri = True
         serializer = PrettyJSONSerializer()
-        authentication = BasicAuthentication()
+        authentication = ApiKeyAuthentication()
         authorization = Authorization()
         always_return_data = True
 
@@ -124,7 +147,7 @@ class ResponseResource(ModelResource):
         resource_name = 'response'
         include_resource_uri = True
         serializer = PrettyJSONSerializer()
-        authentication = BasicAuthentication()
+        authentication = ApiKeyAuthentication()
         authorization = Authorization()
         validation = QuestionOwnerValidation()
         always_return_data = True
@@ -141,7 +164,7 @@ class QuestionPropsResource(ModelResource):
         fields = ['name', 'value']
         resource_name = 'questionprops'
         include_resource_uri = False
-        authentication = BasicAuthentication()  
+        authentication = ApiKeyAuthentication()  
         authorization = Authorization()
         validation = QuestionOwnerValidation()
         always_return_data = True
@@ -167,19 +190,17 @@ class ResponsePropsResource(ModelResource):
         fields = ['name', 'value']
         resource_name = 'responseprops'
         include_resource_uri = False
-        authentication = BasicAuthentication()  
+        authentication = ApiKeyAuthentication()  
         authorization = Authorization()
         validation = ResponseOwnerValidation()
         always_return_data = True     
 
 
 class RegisterResource(ModelResource):
-    # TODO - get working!
     class Meta:
         queryset = User.objects.all()
         resource_name = 'register'
         allowed_methods = ['post']
-        #authentication = Authentication()
         authorization = Authorization() 
         serializer = PrettyJSONSerializer()  
         always_return_data = False 
@@ -239,7 +260,7 @@ class QuizAttemptResponseResource(ModelResource):
         queryset = QuizAttemptResponse.objects.all()
         resource_name = 'submitresponse'
         allowed_methods = ['post']
-        authentication = BasicAuthentication()
+        authentication = ApiKeyAuthentication()
         authorization = Authorization() 
         serializer = PrettyJSONSerializer()  
         always_return_data = True 
@@ -254,7 +275,7 @@ class QuizAttemptResource(ModelResource):
         queryset = QuizAttempt.objects.all()
         resource_name = 'submit'
         allowed_methods = ['post']
-        authentication = BasicAuthentication()
+        authentication = ApiKeyAuthentication()
         authorization = Authorization() 
         serializer = PrettyJSONSerializer()  
         always_return_data = True

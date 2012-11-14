@@ -1,8 +1,11 @@
-#mquiz/models.py
+# mquiz/models.py
 from django.db import models
 from django.contrib.auth.models import User
 from django.core import serializers
 from datetime import datetime
+from tastypie.models import create_api_key
+
+models.signals.post_save.connect(create_api_key, sender=User)
 
 class Question(models.Model):
     QUESTION_TYPES = (
