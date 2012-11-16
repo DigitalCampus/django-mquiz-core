@@ -15,8 +15,6 @@ from tastypie.validation import Validation
 from django.db import IntegrityError
 from tastypie.models import ApiKey
 
-#class LoginResource(Resource):
-
 class QuizOwnerValidation(Validation):
     def is_valid(self, bundle, request=None):
         if not bundle.data:
@@ -58,7 +56,7 @@ class UserResource(ModelResource):
         fields = ['first_name', 'last_name', 'last_login','username']
         allowed_methods = ['post']
         authentication = Authentication()
-        authorization = MquizAPIAuthorization() 
+        authorization = Authorization() 
         serializer = UserJSONSerializer()
         always_return_data = True       
     
@@ -66,12 +64,18 @@ class UserResource(ModelResource):
         username = bundle.data['username']
         password = bundle.data['password']
         if not username or not password:
-            return self._unauthorized()
-        try:
-            u = authenticate(username=username, password=password)
-            # TODO - login user
-        except (User.DoesNotExist, User.MultipleObjectsReturned):
-            return self._unauthorized()
+            raise BadRequest('Username or password missing')
+        
+        u = authenticate(username=username, password=password)
+        if u is not None:
+            if u.is_active:
+                login(request, u)
+            else:
+                # TODO - should raise 401 error
+                raise BadRequest('Authentication failure')
+        else:
+            # TODO should raise 401 error
+            raise BadRequest('Authentication failure')
 
         # TODO Change to delete key (remove completely, not just empty
         bundle.data['password'] = ''
@@ -162,6 +166,7 @@ class QuestionPropsResource(ModelResource):
         queryset = QuestionProps.objects.all()
         allowed_methods = ['get','post']
         fields = ['name', 'value']
+        # TODO how to put slash in the name?
         resource_name = 'questionprops'
         include_resource_uri = False
         authentication = ApiKeyAuthentication()  
@@ -175,9 +180,10 @@ class QuizPropsResource(ModelResource):
         queryset = QuizProps.objects.all()
         allowed_methods = ['get','post']
         fields = ['name', 'value']
+        # TODO how to put slash in the name?
         resource_name = 'quizprops'
         include_resource_uri = False
-        authentication = BasicAuthentication()  
+        authentication = ApiKeyAuthentication()  
         authorization = Authorization()
         validation = QuizOwnerValidation()
         always_return_data = True
@@ -188,6 +194,7 @@ class ResponsePropsResource(ModelResource):
         queryset = ResponseProps.objects.all()
         allowed_methods = ['get','post']
         fields = ['name', 'value']
+        # TODO how to put slash in the name?
         resource_name = 'responseprops'
         include_resource_uri = False
         authentication = ApiKeyAuthentication()  
@@ -258,6 +265,8 @@ class RegisterResource(ModelResource):
 class QuizAttemptResponseResource(ModelResource):
     class Meta:
         queryset = QuizAttemptResponse.objects.all()
+        # TODO - better name?
+        # TODO how to put slash in the name?
         resource_name = 'submitresponse'
         allowed_methods = ['post']
         authentication = ApiKeyAuthentication()
