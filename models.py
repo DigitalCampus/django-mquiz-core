@@ -30,7 +30,7 @@ class Response(models.Model):
     question = models.ForeignKey(Question)
     created_date = models.DateTimeField('date created',default=datetime.now)
     lastupdated_date = models.DateTimeField('date updated',default=datetime.now)
-    score = models.IntegerField(default=0)
+    score = models.DecimalField(default=0,decimal_places=2, max_digits=6)
     title = models.TextField(blank=False)
     order = models.IntegerField(default=1)
     def __unicode__(self):
@@ -83,11 +83,11 @@ class QuizAttempt(models.Model):
     quiz = models.ForeignKey(Quiz)
     attempt_date = models.DateTimeField('date attempted',default=datetime.now)
     submitted_date = models.DateTimeField('date submitted',default=datetime.now)
-    score = models.IntegerField()
-    maxscore = models.IntegerField()
+    score = models.DecimalField(decimal_places=2, max_digits=6)
+    maxscore = models.DecimalField(decimal_places=2, max_digits=6)
     
 class QuizAttemptResponse(models.Model):
     quizattempt = models.ForeignKey(QuizAttempt)
     question = models.ForeignKey(Question)
-    score = models.IntegerField()
+    score = models.DecimalField(decimal_places=2, max_digits=6)
     text = models.TextField(blank=True)
