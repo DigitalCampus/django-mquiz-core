@@ -25,7 +25,6 @@ class UserJSONSerializer(Serializer):
                 sort_keys=True, ensure_ascii=False, indent=self.json_indent)
         
 class QuizJSONSerializer(Serializer):
-    json_indent = 4
 
     def to_json(self, data, options=None):
         options = options or {}
@@ -39,10 +38,8 @@ class QuizJSONSerializer(Serializer):
         if 'questions' in data:
             self.format_quiz(data)
         
-        #return simplejson.dumps(data, cls=json.DjangoJSONEncoder,
-         #       sort_keys=True)
         return simplejson.dumps(data, cls=json.DjangoJSONEncoder,
-                sort_keys=True, ensure_ascii=False, indent=self.json_indent)
+               sort_keys=True)
         
     def format_quiz(self, data):
         

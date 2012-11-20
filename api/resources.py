@@ -14,6 +14,7 @@ from mquiz.api.serializers import PrettyJSONSerializer, QuizJSONSerializer, User
 from tastypie.validation import Validation
 from django.db import IntegrityError
 from tastypie.models import ApiKey
+from datetime import datetime
 
 class QuizOwnerValidation(Validation):
     def is_valid(self, bundle, request=None):
@@ -209,7 +210,6 @@ class RegisterResource(ModelResource):
         resource_name = 'register'
         allowed_methods = ['post']
         authorization = Authorization() 
-        serializer = PrettyJSONSerializer()  
         always_return_data = False 
          
     def obj_create(self, bundle, request=None, **kwargs):
@@ -279,7 +279,7 @@ class QuizAttemptResource(ModelResource):
     # TODO - how to get the quizattempt id for each response in the hydrate
     quiz = fields.ForeignKey(QuizResource, 'quiz')
     user = fields.ForeignKey(UserResource, 'user')
-    responses = fields.ToManyField('mquiz.api.resources.QuizAttemptResponseResource', 'quizattemptresponse_set', related_name='quizattempt', full=True)
+    #responses = fields.ToManyField('mquiz.api.resources.QuizAttemptResponseResource', 'quizattemptresponse_set', related_name='quizattempt', full=True)
     class Meta:
         queryset = QuizAttempt.objects.all()
         resource_name = 'submit'
@@ -287,9 +287,11 @@ class QuizAttemptResource(ModelResource):
         authentication = ApiKeyAuthentication()
         authorization = Authorization() 
         serializer = PrettyJSONSerializer()  
-        always_return_data = True
+        #always_return_data = True
          
     def hydrate(self, bundle, request=None):
+        #bundle.obj.attempt_date = datetime.fromtimestamp(bundle.data['attempt_date']//1000)
         bundle.obj.user = User.objects.get(pk = bundle.request.user.id)
-        bundle.data['quiz'] = Quiz.objects.get(pk = bundle.data['quiz'])
+        bundle.data['quiz'] = Quiz.objects.get(pk = bundle.data['id'])
         return bundle 
+    
