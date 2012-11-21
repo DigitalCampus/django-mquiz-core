@@ -10,11 +10,14 @@
 
 <form method="post" action="{% url django.contrib.auth.views.login %}">
 {% csrf_token %}
+	<div class="errorWrapper">{{ form.non_field_errors }}</div>
 	<div class="fieldWrapper">
+		<div class="fieldErrorWrapper">{{ form.username.errors }}</div>
 		<div class="fieldLabelWrapper">{% trans 'form_field_username' %}</div>
 		<div class="fieldInputWrapper">{{ form.username }}</div>
 	</div>
 	<div class="fieldWrapper">
+		<div class="fieldErrorWrapper">{{ form.password.errors }}</div>
 		<div class="fieldLabelWrapper">{% trans 'form_field_password' %}</div>
 		<div class="fieldInputWrapper">{{ form.password }}</div>
 	</div>

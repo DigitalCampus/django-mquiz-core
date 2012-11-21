@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import (authenticate, login, views)
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-import uuid
+from django.conf import settings
 
 from forms import RegisterForm, ResetForm
 
@@ -38,12 +38,16 @@ def reset(request):
         if form.is_valid():
             username = form.cleaned_data.get("username")
             user = User.objects.get(username__exact=username)
-            newpass = uuid.uuid1().urn[9:17]
+            newpass = User.objects.make_random_password(length=8)
             user.set_password(newpass)
             user.save()
             # TODO - better way to manage email message content
-            send_mail('mQuiz: Password reset', 'Here is your new password for mQuiz: '+newpass + '\n\nWhen you next log in you can update your password to something more memorable.', 'alex@digital-campus.org', ['alex@alexlittle.net'], fail_silently=False)
-            
+            # TODO use
+            send_mail('mQuiz: Password reset', 'Here is your new password for mQuiz: '+newpass 
+                      + '\n\nWhen you next log in you can update your password to something more memorable.' 
+                      + '\n\nhttp://mquiz.org', 
+                      settings.SERVER_EMAIL, [user.email], fail_silently=False)
+            return render(request, 'mquiz/reset-sent.html')
     else:
         form = ResetForm() # An unbound form
 
