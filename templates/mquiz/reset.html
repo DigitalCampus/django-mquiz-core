@@ -7,9 +7,9 @@
 <form action="{% url profile_reset %}" method="post">{% csrf_token %}
     <div class="errorWrapper">{{ form.non_field_errors }}</div>
     <div class="fieldWrapper">
-        <div class="fieldErrorWrapper">{{ form.email.errors }}</div>
-        <div class="fieldLabelWrapper"><label for="id_email">{% trans 'form_field_email' %}</label></div>
-        <div class="fieldInputWrapper">{{ form.email }}</div>
+        <div class="fieldErrorWrapper">{{ form.username.errors }}</div>
+        <div class="fieldLabelWrapper"><label for="id_email">{% trans 'form_field_username' %}</label></div>
+        <div class="fieldInputWrapper">{{ form.username }}</div>
     </div>
     <div class="fieldWrapper">
         <div class="fieldLabelWrapper">&nbsp;</div>

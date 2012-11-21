@@ -133,6 +133,7 @@ class QuestionResource(ModelResource):
         include_resource_uri = True
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
+        # TODO - format better to show responses/props as in QuizResource
         always_return_data = True
 
     def hydrate(self, bundle, request=None):

@@ -41,7 +41,14 @@ class RegisterForm(forms.Form):
         return cleaned_data
 
 class ResetForm(forms.Form):
-    email = forms.CharField(validators=[validate_email],
-        error_messages={'invalid': _(u'Please enter a valid e-mail address.')},
+    username = forms.CharField(max_length=30,
+        error_messages={'invalid': _(u'Please enter a username.')},
         required=True)
-
+    
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        username = cleaned_data.get("username")
+        num_rows = User.objects.filter(username__exact=username).count()
+        if num_rows != 1:
+            raise forms.ValidationError("Username not found")
+        return cleaned_data
