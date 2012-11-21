@@ -111,7 +111,7 @@ class QuizQuestionResource(ModelResource):
         queryset = QuizQuestion.objects.all()
         allowed_methods = ['get','post']
         fields = ['id','order','question']
-        include_resource_uri = True
+        include_resource_uri = False
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
         validation = QuizOwnerValidation()
@@ -122,9 +122,8 @@ class QuizQuestionResource(ModelResource):
         return bundle
      
 class QuestionResource(ModelResource):
-    #quiz = fields.ToManyField('mquiz_api.resources.QuizQuestionResource', 'quiz', full=True)
     responses = fields.ToManyField('mquiz.api.resources.ResponseResource', 'response_set', related_name='question', full=True)   
-    props = fields.ToManyField('mquiz.api.resources.QuestionPropsResource', 'questionprops_set', related_name='question', full=True)
+    props = fields.ToManyField('mquiz.api.resources.QuestionPropsResource', 'questionprops_set', related_name='question', full=True, null=True)
     owner = fields.ForeignKey(UserResource, 'owner')
     class Meta:
         queryset = Question.objects.all()
@@ -132,7 +131,6 @@ class QuestionResource(ModelResource):
         fields = ['title','type']
         resource_name = 'question'
         include_resource_uri = True
-        serializer = PrettyJSONSerializer()
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
         always_return_data = True
@@ -140,28 +138,9 @@ class QuestionResource(ModelResource):
     def hydrate(self, bundle, request=None):
         bundle.obj.owner = User.objects.get(pk = bundle.request.user.id)
         return bundle   
-    
-class ResponseResource(ModelResource):
-    question = fields.ForeignKey(QuestionResource, 'question')
-    props = fields.ToManyField('mquiz.api.resources.ResponsePropsResource', 'responseprops_set', related_name='response', full=True)
-    class Meta:
-        queryset = Response.objects.all()
-        allowed_methods = ['get','post']
-        fields = ['id','order', 'title','score']
-        resource_name = 'response'
-        include_resource_uri = True
-        serializer = PrettyJSONSerializer()
-        authentication = ApiKeyAuthentication()
-        authorization = Authorization()
-        validation = QuestionOwnerValidation()
-        always_return_data = True
-        
-    def hydrate(self, bundle, request=None):
-        bundle.obj.owner = User.objects.get(pk = bundle.request.user.id)
-        return bundle 
-        
+ 
 class QuestionPropsResource(ModelResource):
-    question = fields.ForeignKey(QuestionResource, 'question')
+    question = fields.ToOneField('mquiz.api.resources.QuestionResource', 'question', related_name='questionprops')
     class Meta:
         queryset = QuestionProps.objects.all()
         allowed_methods = ['get','post']
@@ -173,6 +152,41 @@ class QuestionPropsResource(ModelResource):
         authorization = Authorization()
         validation = QuestionOwnerValidation()
         always_return_data = True
+ 
+    
+class ResponseResource(ModelResource):
+    question = fields.ForeignKey(QuestionResource, 'question')
+    props = fields.ToManyField('mquiz.api.resources.ResponsePropsResource', 'responseprops_set', related_name='response', full=True, null=True)
+    class Meta:
+        queryset = Response.objects.all()
+        allowed_methods = ['get','post']
+        fields = ['id','order', 'title','score']
+        resource_name = 'response'
+        include_resource_uri = False
+        serializer = PrettyJSONSerializer()
+        authentication = ApiKeyAuthentication()
+        authorization = Authorization()
+        validation = QuestionOwnerValidation()
+        always_return_data = True
+        
+    def hydrate(self, bundle, request=None):
+        bundle.obj.owner = User.objects.get(pk = bundle.request.user.id)
+        return bundle 
+ 
+class ResponsePropsResource(ModelResource):
+    response = fields.ToOneField('mquiz.api.resources.ResponseResource', 'response', related_name='responseprops')
+    class Meta:
+        queryset = ResponseProps.objects.all()
+        allowed_methods = ['get','post']
+        fields = ['name', 'value']
+        # TODO how to put slash in the name?
+        resource_name = 'responseprops'
+        include_resource_uri = False
+        authentication = ApiKeyAuthentication()  
+        authorization = Authorization()
+        validation = ResponseOwnerValidation()
+        always_return_data = True            
+
            
 class QuizPropsResource(ModelResource):
     quiz = fields.ForeignKey(QuizResource, 'quiz')
@@ -188,19 +202,7 @@ class QuizPropsResource(ModelResource):
         validation = QuizOwnerValidation()
         always_return_data = True
    
-class ResponsePropsResource(ModelResource):
-    response = fields.ForeignKey(ResponseResource, 'response')
-    class Meta:
-        queryset = ResponseProps.objects.all()
-        allowed_methods = ['get','post']
-        fields = ['name', 'value']
-        # TODO how to put slash in the name?
-        resource_name = 'responseprops'
-        include_resource_uri = False
-        authentication = ApiKeyAuthentication()  
-        authorization = Authorization()
-        validation = ResponseOwnerValidation()
-        always_return_data = True     
+
 
 
 class RegisterResource(ModelResource):
@@ -271,8 +273,7 @@ class QuizAttemptResponseResource(ModelResource):
         resource_name = 'quizattemptresponse'
         allowed_methods = ['post']
         authentication = ApiKeyAuthentication()
-        authorization = Authorization()   
-        always_return_data = True 
+        authorization = Authorization()    
            
 class QuizAttemptResource(ModelResource):
     quiz = fields.ForeignKey(QuizResource, 'quiz')
@@ -284,9 +285,9 @@ class QuizAttemptResource(ModelResource):
         allowed_methods = ['post']
         authentication = ApiKeyAuthentication()
         authorization = Authorization() 
-        always_return_data = True
          
     def hydrate(self, bundle, request=None):
+        # TODO - as extra check - check if the 'sent' param is false
         bundle.obj.user = User.objects.get(pk = bundle.request.user.id)
         bundle.data['quiz'] = Quiz.objects.get(pk = bundle.data['quiz_id'])
         # get the question resource uri from the question id
