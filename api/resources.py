@@ -14,7 +14,6 @@ from mquiz.api.serializers import PrettyJSONSerializer, QuizJSONSerializer, User
 from tastypie.validation import Validation
 from django.db import IntegrityError
 from tastypie.models import ApiKey
-from datetime import datetime
 
 class QuizOwnerValidation(Validation):
     def is_valid(self, bundle, request=None):
@@ -263,35 +262,36 @@ class RegisterResource(ModelResource):
         return bundle   
  
 class QuizAttemptResponseResource(ModelResource):
+    question = fields.ForeignKey(QuestionResource, 'question')
+    quizattempt = fields.ToOneField('mquiz.api.resources.QuizAttemptResource', 'quizattempt', related_name='quizattemptresponse')
     class Meta:
         queryset = QuizAttemptResponse.objects.all()
         # TODO - better name?
         # TODO how to put slash in the name?
-        resource_name = 'submitresponse'
+        resource_name = 'quizattemptresponse'
         allowed_methods = ['post']
         authentication = ApiKeyAuthentication()
-        authorization = Authorization() 
-        serializer = PrettyJSONSerializer()  
+        authorization = Authorization()   
         always_return_data = True 
            
 class QuizAttemptResource(ModelResource):
-    # TODO - check that the question is in the quiz
-    # TODO - how to get the quizattempt id for each response in the hydrate
     quiz = fields.ForeignKey(QuizResource, 'quiz')
     user = fields.ForeignKey(UserResource, 'user')
-    #responses = fields.ToManyField('mquiz.api.resources.QuizAttemptResponseResource', 'quizattemptresponse_set', related_name='quizattempt', full=True)
+    responses = fields.ToManyField('mquiz.api.resources.QuizAttemptResponseResource', 'quizattemptresponse_set', related_name='quizattempt', full=True, null=True)
     class Meta:
         queryset = QuizAttempt.objects.all()
-        resource_name = 'submit'
+        resource_name = 'quizattempt'
         allowed_methods = ['post']
         authentication = ApiKeyAuthentication()
         authorization = Authorization() 
-        serializer = PrettyJSONSerializer()  
-        #always_return_data = True
+        always_return_data = True
          
     def hydrate(self, bundle, request=None):
-        #bundle.obj.attempt_date = datetime.fromtimestamp(bundle.data['attempt_date']//1000)
         bundle.obj.user = User.objects.get(pk = bundle.request.user.id)
-        bundle.data['quiz'] = Quiz.objects.get(pk = bundle.data['id'])
+        bundle.data['quiz'] = Quiz.objects.get(pk = bundle.data['quiz_id'])
+        # get the question resource uri from the question id
+        for response in bundle.data['responses']:
+            # TODO should check that the question is actually in this quiz first
+            response['question'] = Question.objects.get(pk = response['question_id'])
         return bundle 
     
