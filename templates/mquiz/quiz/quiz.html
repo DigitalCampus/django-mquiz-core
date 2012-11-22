@@ -2,8 +2,25 @@
 {% load i18n %}
 {% block content %}
 <h2>{% trans 'page_title_create_quiz' %}</h2>
-<form action="{% url mquiz_create %}" method="post">{% csrf_token %}
 
-
-
+<form action="{% url mquiz_create %}" method="post">
+	{% csrf_token %}
+	<div class="fieldWrapper">
+		<div class="fieldErrorWrapper">{{ quiz_form.title.errors }}</div>
+		<div class="fieldLabelWrapper">{% trans 'form_field_quiz_title' %}</div>
+		<div class="fieldInputWrapper">{{ quiz_form.title }}</div>
+	</div>
+	<div class="fieldWrapper">
+		<div class="fieldErrorWrapper">{{ quiz_form.description.errors }}</div>
+		<div class="fieldLabelWrapper">{% trans 'form_field_quiz_description' %}</div>
+		<div class="fieldInputWrapper">{{ quiz_form.description }}</div>
+	</div>
+	<h3 class="formsection">{% trans 'form_section_questions' %}</h3>
+	 	
+	
+	<div class="fieldWrapper">
+        <div class="fieldLabelWrapper">&nbsp;</div>
+        <div class="fieldInputWrapper"><input type="submit" value="{% trans 'button_quiz_save' %}" /></div>
+    </div>
+</form>
 {% endblock %}

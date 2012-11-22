@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<h2>{% trans 'page_title_quiz' %}</h2>
+{% blocktrans %}
+<p>Your quiz has been saved</p>
+{% endblocktrans %}
+
+{% include "includes/messages.html" %}	
+{% endblock %}
