@@ -4,8 +4,10 @@ from django.contrib.auth import (authenticate, login, views)
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib import messages
+from django.utils.translation import ugettext as _
 
-from forms import RegisterForm, ResetForm
+from forms import RegisterForm, ResetForm, ProfileForm
 
 def register(request):
     if request.method == 'POST': # if form submitted...
@@ -25,8 +27,8 @@ def register(request):
             if u is not None:
                 if u.is_active:
                     login(request, u)
-                    return render(request, 'mquiz/thanks.html') # Redirect after POST
-            return render(request, 'mquiz/thanks.html') # Redirect after POST
+                    return HttpResponseRedirect('thanks/') # Redirect after POST
+            return HttpResponseRedirect('thanks/') # Redirect after POST
     else:
         form = RegisterForm() # An unbound form
 
@@ -42,15 +44,40 @@ def reset(request):
             user.set_password(newpass)
             user.save()
             # TODO - better way to manage email message content
-            # TODO use
             send_mail('mQuiz: Password reset', 'Here is your new password for mQuiz: '+newpass 
                       + '\n\nWhen you next log in you can update your password to something more memorable.' 
                       + '\n\nhttp://mquiz.org', 
                       settings.SERVER_EMAIL, [user.email], fail_silently=False)
-            return render(request, 'mquiz/reset-sent.html')
+            return HttpResponseRedirect('sent')
     else:
         form = ResetForm() # An unbound form
 
     return render(request, 'mquiz/reset.html', {'form': form,})
 
-
+def edit(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST,request=request)
+        if form.is_valid():
+            # update basic data
+            email = form.cleaned_data.get("email")
+            first_name = form.cleaned_data.get("first_name")
+            last_name = form.cleaned_data.get("last_name")
+            request.user.email = email
+            request.user.first_name = first_name
+            request.user.last_name = last_name
+            request.user.save()
+            messages.success(request, _(u"Profile updated"))
+            
+            # if password should be changed
+            password = form.cleaned_data.get("password")
+            if password:
+                request.user.set_password(password)
+                request.user.save()
+                messages.success(request, _(u"Password updated"))
+    else:
+        form = ProfileForm(initial={'username':request.user.username,
+                                    'email':request.user.email,
+                                    'first_name':request.user.first_name,
+                                    'last_name':request.user.last_name,},request=request)
+        
+    return render(request, 'mquiz/profile.html', {'form': form,})

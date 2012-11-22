@@ -28,14 +28,14 @@ class RegisterForm(forms.Form):
         password_again = cleaned_data.get("password_again")
 
         # check the email address not already used
-        num_rows = User.objects.filter(email__exact=email).count()
+        num_rows = User.objects.filter(email=email).count()
         if num_rows != 0:
-            raise forms.ValidationError("Email has already been registered")
+            raise forms.ValidationError( _(u"Email has already been registered"))
 
         # check the password are the same
         if password and password_again:
             if password != password_again:
-                raise forms.ValidationError("Passwords do not match.")
+                raise forms.ValidationError( _(u"Passwords do not match."))
 
         # Always return the full collection of cleaned data.
         return cleaned_data
@@ -50,5 +50,46 @@ class ResetForm(forms.Form):
         username = cleaned_data.get("username")
         num_rows = User.objects.filter(username__exact=username).count()
         if num_rows != 1:
-            raise forms.ValidationError("Username not found")
+            raise forms.ValidationError( _(u"Username not found"))
+        return cleaned_data
+
+class ProfileForm(forms.Form):
+    username = forms.CharField(widget = forms.TextInput(attrs={'readonly':'readonly'}),
+                               required=False)
+    email = forms.CharField(validators=[validate_email],
+                            error_messages={'invalid': _(u'Please enter a valid e-mail address.')},
+                            required=True)
+    password = forms.CharField(widget=forms.PasswordInput,
+                               required=False,
+                               min_length=6,
+                               error_messages={'min_length': _(u'Your new password should be at least 6 characters long')},)
+    password_again = forms.CharField(widget=forms.PasswordInput,
+                                     required=False,
+                                     min_length=6)
+    first_name = forms.CharField(max_length=100,
+                                 min_length=2,
+                                 required=True)
+    last_name = forms.CharField(max_length=100,
+                                min_length=2,
+                                required=True)
+    
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super(ProfileForm, self).__init__(*args, **kwargs)
+        
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        # check email not used by anyone else
+        email = cleaned_data.get("email")
+        num_rows = User.objects.exclude(username__exact=self.request.user.username).filter(email=email).count()
+        if num_rows != 0:
+            raise forms.ValidationError( _(u"Email address already in use"))
+        
+        # if password entered then check they are the same
+        password = cleaned_data.get("password")
+        password_again = cleaned_data.get("password_again")
+        if password and password_again:
+            if password != password_again:
+                raise forms.ValidationError( _(u"Passwords do not match."))
+            
         return cleaned_data
