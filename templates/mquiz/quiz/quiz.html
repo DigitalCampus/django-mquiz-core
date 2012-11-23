@@ -16,7 +16,19 @@
 		<div class="fieldInputWrapper">{{ quiz_form.description }}</div>
 	</div>
 	<h3 class="formsection">{% trans 'form_section_questions' %}</h3>
-	 	
+		{{ question_formset.management_form }}
+	 	{% for form in question_formset.forms %}
+        	<div class="fieldWrapper">
+				<div class="fieldErrorWrapper">{{ form.title.errors }}</div>
+				<div class="fieldLabelWrapper">{% trans 'form_field_question_title' %} {{ forloop.counter }}</div>
+				<div class="fieldInputWrapper">{{ form.title }}</div>
+			</div>
+			<div class="fieldWrapper">
+				<div class="fieldErrorWrapper">{{ form.type.errors }}</div>
+				<div class="fieldLabelWrapper">{% trans 'form_field_question_type' %}</div>
+				<div class="fieldInputWrapper">{{ form.type }}</div>
+			</div>
+        {% endfor %}
 	
 	<div class="fieldWrapper">
         <div class="fieldLabelWrapper">&nbsp;</div>

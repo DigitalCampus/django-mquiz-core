@@ -10,6 +10,6 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'template_name': 'mquiz/logout.html'}),
     url(r'^setlang/$', 'django.views.i18n.set_language', name="profile_set_language"),
     url(r'^reset/$', 'mquiz.profile.views.reset', name="profile_reset"),
-    url(r'^reset/sent/$', direct_to_template, {"template": "mquiz/reset-sent.html",}, name="profile_reset_sent"),
+    url(r'^reset/sent/$', direct_to_template, {"template": "mquiz/profile/reset-sent.html",}, name="profile_reset_sent"),
     url(r'^edit/$', 'mquiz.profile.views.edit', name="profile_edit"),
 )

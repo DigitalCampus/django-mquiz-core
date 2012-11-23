@@ -32,7 +32,7 @@ def register(request):
     else:
         form = RegisterForm() # An unbound form
 
-    return render(request, 'mquiz/register.html', {'form': form,})
+    return render(request, 'mquiz/profile/register.html', {'form': form,})
 
 def reset(request):
     if request.method == 'POST': # if form submitted...
@@ -52,7 +52,7 @@ def reset(request):
     else:
         form = ResetForm() # An unbound form
 
-    return render(request, 'mquiz/reset.html', {'form': form,})
+    return render(request, 'mquiz/profile/reset.html', {'form': form,})
 
 def edit(request):
     if request.method == 'POST':
@@ -80,4 +80,4 @@ def edit(request):
                                     'first_name':request.user.first_name,
                                     'last_name':request.user.last_name,},request=request)
         
-    return render(request, 'mquiz/profile.html', {'form': form,})
+    return render(request, 'mquiz/profile/profile.html', {'form': form,})
