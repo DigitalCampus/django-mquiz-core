@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.forms.formsets import formset_factory
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.conf import settings
 
 from mquiz.models import Quiz, Question
 from forms import QuizForm, QuestionForm
@@ -14,6 +15,20 @@ def home_view(request):
     latest_quiz_list = Quiz.objects.filter(draft=0).order_by('-created_date')[:10]
     return render_to_response('mquiz/home.html',{'latest_quiz_list': latest_quiz_list}, context_instance=RequestContext(request))
 
+def about_view(request):
+        return render_to_response('mquiz/about.html', 
+                                  {'settings': settings},
+                                  context_instance=RequestContext(request))
+def contact_view(request):
+        return render_to_response('mquiz/contact.html', 
+                                  {'settings': settings},
+                                  context_instance=RequestContext(request))
+        
+def terms_view(request):
+        return render_to_response('mquiz/terms.html', 
+                                  {'settings': settings},
+                                  context_instance=RequestContext(request))
+                     
 def create_quiz(request):
     QuestionFormSet = formset_factory(QuestionForm,extra=3,)
     if request.method == 'POST':

@@ -19,15 +19,15 @@ v1_api.register(QuizAttemptResource())
 urlpatterns = patterns('',
 
     url(r'^$', 'mquiz.views.home_view', name="mquiz_home"),
-    url(r'^about/$', direct_to_template, {"template": "mquiz/about.html",}, name="mquiz_about"),
-    url(r'^terms/$', direct_to_template, {"template": "mquiz/terms.html",}, name="mquiz_terms"),
-    url(r'^contact/$', direct_to_template, {"template": "mquiz/contact.html",}, name="mquiz_contact"),
-    url(r'^create/$', 'mquiz.views.create_quiz', name="mquiz_create"),
-    url(r'^create/saved/$', direct_to_template, {"template": "mquiz/quiz/saved.html",}, name="mquiz_create_saved"),
+    url(r'^about/$', 'mquiz.views.about_view', name="mquiz_about"),
+    url(r'^terms/$', 'mquiz.views.terms_view', name="mquiz_terms"),
+    url(r'^contact/$', 'mquiz.views.contact_view', name="mquiz_contact"),
+    url(r'^quiz/$', 'mquiz.views.create_quiz', name="mquiz_create"),
+    url(r'^quiz/saved/$', direct_to_template, {"template": "mquiz/quiz/saved.html",}, name="mquiz_create_saved"),
     url(r'^m/', include('mquiz.mobile.urls')),
     url(r'^profile/', include('mquiz.profile.urls')),
     # TODO customise name (currently api_v1_top_level)
-    url(r'^api/', include(v1_api.urls), name="mquiz_api"),
+    url(r'^api/', include(v1_api.urls)),
 
     
 

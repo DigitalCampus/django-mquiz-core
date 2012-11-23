@@ -2,13 +2,13 @@
 {% load i18n %}
 {% block content %}
 <h2>{% trans 'page_title_about' %}</h2>
-{% url 'api_v1_top_level' as url_api %}
-{% blocktrans %}
+
+{% blocktrans with settings.SERVER_EMAIL as email %}
 <p>mQuiz allows you to create online quizzes which your friends can answer on their mobile device.</p>
-<p>You can create and edit your quiz online (or <a href="{{ url_api }}">use our API</a>) with our easy to use tool.</p>
+<p>You can create and edit your quiz online with our easy to use tool, or <a href="../api/v1/?format=json">use our API</a>.</p>
 <p>Your friends can download the quizzes to their smartphones and take the quizzes even when offline.</p>
 <p>Quiz results can be uploaded to our website and compare your scores with your friends!</p>
 <p>You can view summary information about who has responded, average scores and more.</p>
-<p>mQuiz is still under development, we expect new features to be added rapidly, so you may find little bugs, if so, <a href="mailto:alex@mquiz.org">please let us know</a></p>
+<p>mQuiz is still under development, we expect new features to be added rapidly, so you may find little bugs, if so, <a href="mailto:{{ email }}">please let us know</a></p>
 {% endblocktrans %}
 {% endblock %}
