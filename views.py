@@ -8,8 +8,8 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.conf import settings
 
-from mquiz.models import Quiz, Question
-from forms import QuizForm, QuestionForm
+from mquiz.models import Quiz, Question, Response
+from forms import QuizForm, QuestionForm, ResponseForm,BaseQuestionFormSet
 
 def home_view(request):
     latest_quiz_list = Quiz.objects.filter(draft=0).order_by('-created_date')[:10]
@@ -30,25 +30,25 @@ def terms_view(request):
                                   context_instance=RequestContext(request))
                      
 def create_quiz(request):
-    QuestionFormSet = formset_factory(QuestionForm,extra=3,)
+    QuestionFormSet = formset_factory(QuestionForm,extra=5,formset=BaseQuestionFormSet)
+    
     if request.method == 'POST':
+    
         quiz_form = QuizForm(request.POST)
-        question_formset = QuestionFormSet(request.POST,prefix='questions')
+        question_formset = forms.QuestionFormSet(request.POST,)
+        
         if quiz_form.is_valid():
             quiz = quiz_form.save(commit=False)
             quiz.owner = request.user
             quiz.save()
-            for question in question_formset:
-                messages.info(request,question)
-                #question.save(commit=False)
-                #question.owner = request.user
-                #question.save()
-            messages.info(request, "Your quiz was saved")
-            return HttpResponseRedirect('saved/')
+            
+            #if question_formset.is_valid():
+                # do something here 
+                     
+            #return HttpResponseRedirect('saved/')
     else:
         quiz_form = QuizForm() # An unbound form
-        question_formset = QuestionFormSet(prefix='questions',)
-        
+        question_formset = QuestionFormSet()
 
     return render(request, 'mquiz/quiz/quiz.html', {'quiz_form': quiz_form,'question_formset':question_formset})
 

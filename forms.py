@@ -1,9 +1,29 @@
-#mquiz/forms.py
+# mquiz/forms.py
 from django import forms
 from django.forms import ModelForm
-from django.utils.translation import ugettext as _
+from django.forms.formsets import BaseFormSet
+from django.forms.models import inlineformset_factory  
 from mquiz.models import Quiz, Question, Response
 
+ResponseFormset = inlineformset_factory(Question, Response, extra=4) 
+
+class BaseQuestionFormSet(BaseFormSet):
+    def add_fields(self, form, index):
+        super(BaseQuestionFormSet, self).add_fields(form, index)
+        # created the nested formset
+        try:
+            instance = self.get_queryset()[index]
+            pk_value = instance.pk
+        except IndexError:
+            instance=None
+            pk_value = hash(form.prefix)
+ 
+        # store the formset in the .nested property
+        form.nested = [
+            ResponseFormset(data=self.data,
+                            instance = instance,
+                            prefix = 'RESPONSES_%s' % pk_value)]
+        
 class QuizForm(ModelForm):
     class Meta:
         model = Quiz
