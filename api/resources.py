@@ -14,6 +14,7 @@ from mquiz.api.serializers import PrettyJSONSerializer, QuizJSONSerializer, User
 from tastypie.validation import Validation
 from django.db import IntegrityError
 from tastypie.models import ApiKey
+from mquiz.profile.forms import RegisterForm
 
 class QuizOwnerValidation(Validation):
     def is_valid(self, bundle, request=None):
@@ -203,9 +204,6 @@ class QuizPropsResource(ModelResource):
         validation = QuizOwnerValidation()
         always_return_data = True
    
-
-
-
 class RegisterResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
@@ -246,10 +244,22 @@ class RegisterResource(ModelResource):
         except KeyError:
             # TODO translation
             raise BadRequest('Please supply a last name') 
-        # TODO check firstname and lastname longer than 2
+        
+        # Check username length
+        if len(username) < 4:
+            raise BadRequest('Your username must be at least 4 characters long')
+        # check firstname and lastname longer than 2
+        if len(first_name) < 2:
+            raise BadRequest('Your first name must be at least 2 characters long')
+        if len(last_name) < 2:
+            raise BadRequest('Your last name must be at least 2 characters long')  
         # TODO check valid email address
-        # TODO check passwords match
-        # TODO check password longer than 6
+        # check passwords match
+        if password != password_again:
+            raise BadRequest('Your passwords don\'t match')
+        # check password longer than 6
+        if len(password) < 6:
+            raise BadRequest('Your password must be at least 6 characters long') 
         try:
             bundle.obj = User.objects.create_user(username, email, password)
             bundle.obj.first_name = first_name
@@ -261,7 +271,7 @@ class RegisterResource(ModelResource):
                     login(bundle.request, u)
         except IntegrityError:
             # TODO translation
-            raise BadRequest('That username already exists')
+            raise BadRequest('Username "'+username+'" already in use, please select another')
         return bundle   
  
 class QuizAttemptResponseResource(ModelResource):
