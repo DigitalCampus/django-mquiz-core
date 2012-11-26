@@ -209,57 +209,31 @@ class RegisterResource(ModelResource):
         queryset = User.objects.all()
         resource_name = 'register'
         allowed_methods = ['post']
+        fields = ['username', 'first_name','last_name','email']
         authorization = Authorization() 
-        always_return_data = False 
+        always_return_data = True 
+        include_resource_uri = False
          
     def obj_create(self, bundle, request=None, **kwargs):
-        # TODO - must be a better way to do this...
-        try:
+        data = { 'username': bundle.data['username'],
+                'password': bundle.data['password'],
+                'password_again': bundle.data['passwordagain'],
+                'email': bundle.data['email'],
+                'first_name': bundle.data['firstname'],
+                'last_name': bundle.data['lastname'],}
+        rf = RegisterForm(data)
+        if not rf.is_valid():
+            str = ""
+            for key, value in rf.errors.items():
+                for error in value:
+                    str += error + "\n"
+            raise BadRequest(str)
+        else:
             username = bundle.data['username']
-        except KeyError:
-            # TODO translation
-            raise BadRequest('Please supply a username')
-        try:
             password = bundle.data['password']
-        except KeyError:
-            # TODO translation
-            raise BadRequest('Please supply a password')
-        try:
-            password_again = bundle.data['passwordagain']
-        except KeyError:
-            # TODO translation
-            raise BadRequest('Please supply a password again')
-        try:
             email = bundle.data['email']
-        except KeyError:
-            # TODO translation
-            raise BadRequest('Please supply an email')
-        try:
             first_name = bundle.data['firstname']
-        except KeyError:
-            # TODO translation
-            raise BadRequest('Please supply a first name')  
-        try:
             last_name = bundle.data['lastname']
-        except KeyError:
-            # TODO translation
-            raise BadRequest('Please supply a last name') 
-        
-        # Check username length
-        if len(username) < 4:
-            raise BadRequest('Your username must be at least 4 characters long')
-        # check firstname and lastname longer than 2
-        if len(first_name) < 2:
-            raise BadRequest('Your first name must be at least 2 characters long')
-        if len(last_name) < 2:
-            raise BadRequest('Your last name must be at least 2 characters long')  
-        # TODO check valid email address
-        # check passwords match
-        if password != password_again:
-            raise BadRequest('Your passwords don\'t match')
-        # check password longer than 6
-        if len(password) < 6:
-            raise BadRequest('Your password must be at least 6 characters long') 
         try:
             bundle.obj = User.objects.create_user(username, email, password)
             bundle.obj.first_name = first_name
@@ -269,9 +243,15 @@ class RegisterResource(ModelResource):
             if u is not None:
                 if u.is_active:
                     login(bundle.request, u)
+            key = ApiKey.objects.get(user = u)
+            bundle.data['api_key'] = key.key
         except IntegrityError:
             # TODO translation
             raise BadRequest('Username "'+username+'" already in use, please select another')
+        del bundle.data['passwordagain']
+        del bundle.data['password']
+        del bundle.data['firstname']
+        del bundle.data['lastname']
         return bundle   
  
 class QuizAttemptResponseResource(ModelResource):
