@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
 from django.utils.translation import ugettext as _
+from tastypie.models import ApiKey
 
 from forms import RegisterForm, ResetForm, ProfileForm
 
@@ -55,6 +56,7 @@ def reset(request):
     return render(request, 'mquiz/profile/reset.html', {'form': form,})
 
 def edit(request):
+    key = ApiKey.objects.get(user = request.user)
     if request.method == 'POST':
         form = ProfileForm(request.POST,request=request)
         if form.is_valid():
@@ -75,9 +77,11 @@ def edit(request):
                 request.user.save()
                 messages.success(request, _(u"Password updated"))
     else:
+        
         form = ProfileForm(initial={'username':request.user.username,
                                     'email':request.user.email,
                                     'first_name':request.user.first_name,
-                                    'last_name':request.user.last_name,},request=request)
+                                    'last_name':request.user.last_name,
+                                    'api_key': key.key},request=request)
         
     return render(request, 'mquiz/profile/profile.html', {'form': form,})

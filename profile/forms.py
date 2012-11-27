@@ -65,6 +65,8 @@ class ResetForm(forms.Form):
         return cleaned_data
 
 class ProfileForm(forms.Form):
+    api_key = forms.CharField(widget = forms.TextInput(attrs={'readonly':'readonly'}),
+                               required=False)
     username = forms.CharField(widget = forms.TextInput(attrs={'readonly':'readonly'}),
                                required=False)
     email = forms.CharField(validators=[validate_email],

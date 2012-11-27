@@ -16,6 +16,12 @@
         <div class="fieldInputMessage">{% trans 'form_msg_username_not_editable' %}</div>
     </div>
     <div class="fieldWrapper">
+        <div class="fieldErrorWrapper">{{ form.api_key.errors }}</div>
+        <div class="fieldLabelWrapper"><label for="id_api_key">{% trans 'form_field_api_key' %}</label></div>
+        <div class="fieldInputWrapper">{{ form.api_key }}</div>
+        <div class="fieldInputMessage">{% trans 'form_msg_api_key' %}</div>
+    </div>
+    <div class="fieldWrapper">
         <div class="fieldErrorWrapper">{{ form.email.errors }}</div>
         <div class="fieldLabelWrapper"><label for="id_email">{% trans 'form_field_email' %}</label></div>
         <div class="fieldInputWrapper">{{ form.email }}</div>
