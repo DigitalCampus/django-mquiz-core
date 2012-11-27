@@ -164,7 +164,7 @@ class ResponseResource(ModelResource):
         allowed_methods = ['get','post']
         fields = ['id','order', 'title','score']
         resource_name = 'response'
-        include_resource_uri = False
+        include_resource_uri = True
         serializer = PrettyJSONSerializer()
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
