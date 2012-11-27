@@ -15,6 +15,8 @@ from tastypie.validation import Validation
 from django.db import IntegrityError
 from tastypie.models import ApiKey
 from mquiz.profile.forms import RegisterForm
+from django.conf.urls.defaults import url
+from django.core.paginator import Paginator, InvalidPage
 
 class QuizOwnerValidation(Validation):
     def is_valid(self, bundle, request=None):
@@ -50,7 +52,6 @@ class ResponseOwnerValidation(Validation):
         return errors 
    
 class UserResource(ModelResource):
-    #api_key = fields.ToOneField('mquiz.api.resources.QuestionResource', 'user', full=True)
     class Meta:
         queryset = User.objects.all()
         resource_name = 'user'
@@ -78,8 +79,7 @@ class UserResource(ModelResource):
             # TODO should raise 401 error
             raise BadRequest('Authentication failure')
 
-        # TODO Change to delete key (remove completely, not just empty
-        bundle.data['password'] = ''
+        del bundle.data['password']
         key = ApiKey.objects.get(user = u)
         bundle.data['api_key'] = key.key
         bundle.obj = u
@@ -204,6 +204,47 @@ class QuizPropsResource(ModelResource):
         validation = QuizOwnerValidation()
         always_return_data = True
    
+    # add the quiz_id into the bundle
+    def dehydrate(self, bundle, request=None):
+        bundle.data['quiz_id'] = QuizResource().get_via_uri(bundle.data['quiz']).id
+        return bundle
+    
+    # use this for filtering on the digest prop of a quiz to determine if it already exists
+    # to avoid recreating the same quiz over and over
+    def override_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/(?P<digest>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('digest_detail'), name="api_digest_detail"),
+        ]
+        
+    def digest_detail(self, request, **kwargs):
+        self.method_check(request, allowed=['get'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+        
+        digest = kwargs.pop('digest', None)
+        quizprop = self._meta.queryset.filter(name = 'digest').filter(value=digest)
+        paginator = Paginator(quizprop, 20)
+
+        try:
+            page = paginator.page(int(request.GET.get('page', 1)))
+        except InvalidPage:
+            raise Http404("Sorry, no results on that page.")
+        
+        objects = []
+
+        for result in page.object_list:
+            bundle = self.build_bundle(obj=result, request=request)
+            bundle = self.full_dehydrate(bundle)
+            objects.append(bundle)
+
+        object_list = {
+            'quizzes': objects,
+        }
+
+        self.log_throttled_access(request)
+        return self.create_response(request, object_list)
+
+        
 class RegisterResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
