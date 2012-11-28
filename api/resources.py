@@ -129,7 +129,7 @@ class QuestionResource(ModelResource):
     class Meta:
         queryset = Question.objects.all()
         allowed_methods = ['get','post']
-        fields = ['title','type']
+        fields = ['title','type','id']
         resource_name = 'question'
         include_resource_uri = True
         authentication = ApiKeyAuthentication()
@@ -325,6 +325,7 @@ class QuizAttemptResource(ModelResource):
         # get the question resource uri from the question id
         for response in bundle.data['responses']:
             # TODO should check that the question is actually in this quiz first
+            # TODO what happens when the question has been deleted
             response['question'] = Question.objects.get(pk = response['question_id'])
         return bundle 
     
