@@ -322,6 +322,9 @@ class QuizAttemptResource(ModelResource):
         # TODO - as extra check - check if the 'sent' param is false
         bundle.obj.user = User.objects.get(pk = bundle.request.user.id)
         bundle.data['quiz'] = Quiz.objects.get(pk = bundle.data['quiz_id'])
+        bundle.obj.ip = bundle.request.META.get('REMOTE_ADDR','0.0.0.0')
+        bundle.obj.agent = bundle.request.META.get('HTTP_USER_AGENT','unknown')
+        
         # get the question resource uri from the question id
         for response in bundle.data['responses']:
             # TODO should check that the question is actually in this quiz first

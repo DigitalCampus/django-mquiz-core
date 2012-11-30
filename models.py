@@ -85,6 +85,8 @@ class QuizAttempt(models.Model):
     submitted_date = models.DateTimeField('date submitted',default=datetime.now)
     score = models.DecimalField(decimal_places=2, max_digits=6)
     maxscore = models.DecimalField(decimal_places=2, max_digits=6)
+    ip = models.IPAddressField()
+    agent = models.TextField(blank=True)
     
 class QuizAttemptResponse(models.Model):
     quizattempt = models.ForeignKey(QuizAttempt)
