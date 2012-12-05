@@ -53,4 +53,12 @@ def create_quiz(request):
     return render(request, 'mquiz/quiz/quiz.html', {'quiz_form': quiz_form,'question_formset':question_formset})
 
 
+def browse(request, letter='A'):
+    letters = []
+    for i in range(0,26):
+        char = chr(ord('A')+i)
+        no_quizzes = Quiz.objects.filter(title__istartswith = char).count()
+        letters.append([char,no_quizzes])
+    quizzes = Quiz.objects.filter(title__istartswith = letter)
+    return render(request, 'mquiz/browse.html', {'letters': letters, 'quizzes': quizzes })
 

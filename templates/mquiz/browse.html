@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<h2>{% trans 'page_title_browse' %}</h2>
+{% if letters %}
+	{% for k,v in letters %}
+		{% if v > 0 %}
+			<a href="{{ k }}">{{ k }}</a>
+		{% else %}
+			{{ k }}
+		{% endif %}
+	{% endfor %}
+{% endif %}
+
+{% if quizzes %}
+	{% for q in quizzes %}
+		<div class="quizlist">
+			<a href="{% url mquiz_mobile %}#{{ q.id }}">{{ q.title }}</a> {{ q.description }}
+		</div>
+	{% endfor %}
+{% endif %}
+
+{% endblock %}

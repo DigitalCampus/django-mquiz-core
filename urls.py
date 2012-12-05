@@ -26,9 +26,9 @@ urlpatterns = patterns('',
     url(r'^quiz/saved/$', direct_to_template, {"template": "mquiz/quiz/saved.html",}, name="mquiz_create_saved"),
     url(r'^m/', include('mquiz.mobile.urls')),
     url(r'^profile/', include('mquiz.profile.urls')),
+    url(r'^browse/$', 'mquiz.views.browse', name="mquiz_browse"),
+    url(r'^browse/(?P<letter>\w+)$', 'mquiz.views.browse', name="mquiz_browse_alpha"),
     # TODO customise name (currently api_v1_top_level)
     url(r'^api/', include(v1_api.urls)),
-
-    
 
 )
