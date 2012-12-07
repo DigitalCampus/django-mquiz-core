@@ -17,6 +17,7 @@ from tastypie.models import ApiKey
 from mquiz.profile.forms import RegisterForm
 from django.conf.urls.defaults import url
 from django.core.paginator import Paginator, InvalidPage
+from django.db.models import Q
 
 class QuizOwnerValidation(Validation):
     def is_valid(self, bundle, request=None):
@@ -105,6 +106,42 @@ class QuizResource(ModelResource):
         bundle.obj.owner = User.objects.get(pk = bundle.request.user.id)
         return bundle 
     
+    def override_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/search/$" % self._meta.resource_name, self.wrap_view('get_search'), name="api_get_search"),
+        ]
+        
+    def get_search(self, request, **kwargs):
+        self.method_check(request, allowed=['get'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+
+        # Do the query.
+        #sqs = SearchQuerySet().models(Note).load_all().auto_query(request.GET.get('q', ''))
+        query = request.GET.get('q', '')
+        searchresults = self._meta.queryset.filter(draft=0,deleted=0).filter(Q(title__icontains=query) | Q(description__icontains=query))
+        paginator = Paginator(searchresults, 20)
+
+        try:
+            page = paginator.page(int(request.GET.get('page', 1)))
+        except InvalidPage:
+            raise Http404("Sorry, no results on that page.")
+
+        objects = []
+
+        for result in page.object_list:
+            bundle = self.build_bundle(obj=result, request=request)
+            bundle = self.full_dehydrate(bundle)
+            objects.append(bundle)
+
+        object_list = {
+            'quizzes': objects,
+        }
+
+        self.log_throttled_access(request)
+        return self.create_response(request, object_list)
+    
+        
 class QuizQuestionResource(ModelResource):
     #quiz = fields.ToOneField('mquiz_api.resources.QuizResource', 'quiz', full=True)
     question = fields.ToOneField('mquiz.api.resources.QuestionResource', 'question', full=True)
