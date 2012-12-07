@@ -7,7 +7,7 @@ from django.forms.formsets import formset_factory
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.conf import settings
-
+import datetime
 from mquiz.models import Quiz, Question, Response, QuizAttempt
 from forms import QuizForm, QuestionForm, ResponseForm,BaseQuestionFormSet
 
@@ -64,19 +64,28 @@ def browse(request, letter='A'):
 
 def quiz_results_date(request,quiz_id):
     quiz = Quiz.objects.get(pk=quiz_id)
-    return render_to_response('mquiz/quiz/results_date.html',{'quiz':quiz }, context_instance=RequestContext(request))
+    dates = []
+    startdate = datetime.datetime.now()
+    for i in range(14,0,-1):
+        temp = startdate - datetime.timedelta(days=i)
+        day = temp.strftime("%d")
+        month = temp.strftime("%m")
+        year = temp.strftime("%y")
+        count = QuizAttempt.objects.filter(quiz=quiz,attempt_date__day=day,attempt_date__month=month,attempt_date__year=year).count()
+        dates.append([temp.strftime("%d %b %y"),count])
+    return render_to_response('mquiz/quiz/results/date.html',{'quiz':quiz, 'dates':dates }, context_instance=RequestContext(request))
 
 def quiz_results_score(request,quiz_id):
     quiz = Quiz.objects.get(pk=quiz_id)
-    return render_to_response('mquiz/quiz/results_score.html',{'quiz':quiz }, context_instance=RequestContext(request))
+    return render_to_response('mquiz/quiz/results/score.html',{'quiz':quiz }, context_instance=RequestContext(request))
 
 def quiz_results_questions(request,quiz_id):
     quiz = Quiz.objects.get(pk=quiz_id)
-    return render_to_response('mquiz/quiz/results_questions.html',{'quiz':quiz }, context_instance=RequestContext(request))
+    return render_to_response('mquiz/quiz/results/questions.html',{'quiz':quiz }, context_instance=RequestContext(request))
 
 def quiz_results_attempts(request,quiz_id):
     quiz = Quiz.objects.get(pk=quiz_id)
-    return render_to_response('mquiz/quiz/results_attempts.html',{'quiz':quiz }, context_instance=RequestContext(request))
+    return render_to_response('mquiz/quiz/results/attempts.html',{'quiz':quiz }, context_instance=RequestContext(request))
 
 def my_results(request):
     results = QuizAttempt.objects.filter(user = request.user).order_by('-attempt_date')
