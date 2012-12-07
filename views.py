@@ -62,12 +62,25 @@ def browse(request, letter='A'):
     quizzes = Quiz.objects.filter(title__istartswith = letter)
     return render(request, 'mquiz/browse.html', {'letters': letters, 'quizzes': quizzes })
 
-def quiz_results(request,quiz_id):
-    pass
+def quiz_results_date(request,quiz_id):
+    quiz = Quiz.objects.get(pk=quiz_id)
+    return render_to_response('mquiz/quiz/results_date.html',{'quiz':quiz }, context_instance=RequestContext(request))
+
+def quiz_results_score(request,quiz_id):
+    quiz = Quiz.objects.get(pk=quiz_id)
+    return render_to_response('mquiz/quiz/results_score.html',{'quiz':quiz }, context_instance=RequestContext(request))
+
+def quiz_results_questions(request,quiz_id):
+    quiz = Quiz.objects.get(pk=quiz_id)
+    return render_to_response('mquiz/quiz/results_questions.html',{'quiz':quiz }, context_instance=RequestContext(request))
+
+def quiz_results_attempts(request,quiz_id):
+    quiz = Quiz.objects.get(pk=quiz_id)
+    return render_to_response('mquiz/quiz/results_attempts.html',{'quiz':quiz }, context_instance=RequestContext(request))
 
 def my_results(request):
     results = QuizAttempt.objects.filter(user = request.user).order_by('-attempt_date')
-    return render(request, 'mquiz/my_results.html', {'results': results})
+    return render_to_response('mquiz/my_results.html', {'results': results}, context_instance=RequestContext(request))
 
 def manage_view(request):
     pass
