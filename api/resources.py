@@ -91,7 +91,7 @@ class QuizResource(ModelResource):
     props = fields.ToManyField('mquiz.api.resources.QuizPropsResource', 'quizprops_set', related_name='quiz', full=True)
     owner = fields.ForeignKey(UserResource, 'owner')
     class Meta:
-        queryset = Quiz.objects.filter(draft=0,deleted=0)
+        queryset = Quiz.objects.filter(draft=0,deleted=0).order_by('-lastupdated_date')
         allowed_methods = ['get','post']
         fields = ['title', 'id', 'description', 'lastupdated_date']
         resource_name = 'quiz'

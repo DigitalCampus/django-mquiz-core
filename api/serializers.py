@@ -39,7 +39,7 @@ class QuizJSONSerializer(Serializer):
             self.format_quiz(data)
         
         return simplejson.dumps(data, cls=json.DjangoJSONEncoder,
-               sort_keys=True, ensure_ascii=False, indent=self.json_indent)
+               sort_keys=True, ensure_ascii=False)
         
     def format_quiz(self, data):
         

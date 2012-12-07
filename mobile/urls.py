@@ -4,6 +4,6 @@ from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns('',
 
-    url(r'^$', direct_to_template, {"template": "mquiz/mobile/index.html",}, name="mquiz_mobile"),    
+    url(r'^$',  'mquiz.mobile.views.index_view',name="mquiz_mobile"),    
     
 )
