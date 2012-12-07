@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.conf import settings
 
-from mquiz.models import Quiz, Question, Response
+from mquiz.models import Quiz, Question, Response, QuizAttempt
 from forms import QuizForm, QuestionForm, ResponseForm,BaseQuestionFormSet
 
 def home_view(request):
@@ -62,3 +62,12 @@ def browse(request, letter='A'):
     quizzes = Quiz.objects.filter(title__istartswith = letter)
     return render(request, 'mquiz/browse.html', {'letters': letters, 'quizzes': quizzes })
 
+def quiz_results(request,quiz_id):
+    pass
+
+def my_results(request):
+    results = QuizAttempt.objects.filter(user = request.user).order_by('-attempt_date')
+    return render(request, 'mquiz/my_results.html', {'results': results})
+
+def manage_view(request):
+    pass

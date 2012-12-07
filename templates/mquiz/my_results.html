@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<h2>{% trans 'page_title_results' %}</h2>
+
+{% if results %}
+	{% for r in results %}
+		<div class="quizlist">
+			<div class='quiztitle'>{{ r.quiz.title }}</div>
+			<div class='quizcell'>{{ r.get_score_percent }}%</div>
+			<div class='quizcell'>{{ r.attempt_date|date:"H:m d M Y" }}</div>
+			<div style='clear:both'></div>
+		</div>
+	{% endfor %}
+{% else %}
+	<p>You haven't taken any quizzes yet</p>
+{% endif %}
+{% endblock %}

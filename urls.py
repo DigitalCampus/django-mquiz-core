@@ -22,12 +22,16 @@ urlpatterns = patterns('',
     url(r'^about/$', 'mquiz.views.about_view', name="mquiz_about"),
     url(r'^terms/$', 'mquiz.views.terms_view', name="mquiz_terms"),
     url(r'^contact/$', 'mquiz.views.contact_view', name="mquiz_contact"),
-    url(r'^quiz/$', 'mquiz.views.create_quiz', name="mquiz_create"),
-    url(r'^quiz/saved/$', direct_to_template, {"template": "mquiz/quiz/saved.html",}, name="mquiz_create_saved"),
+    url(r'^quiz/(?P<quiz_id>\d+)/results/$', 'mquiz.views.quiz_results', name="mquiz_results"),
+    url(r'^quiz/create/$', 'mquiz.views.create_quiz', name="mquiz_create"),
+    url(r'^quiz/create/saved/$', direct_to_template, {"template": "mquiz/quiz/saved.html",}, name="mquiz_create_saved"),
     url(r'^m/', include('mquiz.mobile.urls')),
     url(r'^profile/', include('mquiz.profile.urls')),
     url(r'^browse/$', 'mquiz.views.browse', name="mquiz_browse"),
     url(r'^browse/(?P<letter>\w+)$', 'mquiz.views.browse', name="mquiz_browse_alpha"),
+    url(r'^results/my/$', 'mquiz.views.my_results', name="mquiz_my_results"),
+    url(r'^manage/$', 'mquiz.views.manage_view', name="mquiz_manage"), 
+    
     # TODO customise name (currently api_v1_top_level)
     url(r'^api/', include(v1_api.urls)),
 

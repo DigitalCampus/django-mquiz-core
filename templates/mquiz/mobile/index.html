@@ -18,6 +18,8 @@
 		<div id="header-title" onclick="mQ.confirmExitQuiz('#home')" class="clickable">
 			<h1 id="mobile_app_title">mQuiz</h1>
 			{% csrf_token %}
+			<input type="hidden" value="{{ user.username }}" name="mquiz_username" id="mquiz_username"/>
+			<input type="hidden" value="{{ user.api_key.key }}" name="mquiz_api_key" id="mquiz_api_key"/>
 		</div>
 		<div id="header-right">
 			<div id="langchange">

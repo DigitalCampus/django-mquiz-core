@@ -88,6 +88,10 @@ class QuizAttempt(models.Model):
     ip = models.IPAddressField()
     agent = models.TextField(blank=True)
     
+    def get_score_percent(self):
+        percent = int(round(self.score * 100 / self.maxscore))
+        return percent
+    
 class QuizAttemptResponse(models.Model):
     quizattempt = models.ForeignKey(QuizAttempt)
     question = models.ForeignKey(Question)

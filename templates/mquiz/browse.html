@@ -15,7 +15,7 @@
 {% if quizzes %}
 	{% for q in quizzes %}
 		<div class="quizlist">
-			<a href="{% url mquiz_mobile %}#{{ q.id }}">{{ q.title }}</a> {{ q.description }}
+			<a href="{% url mquiz_mobile %}#{{ q.id }}">{{ q.title }}</a> - {{ q.description }}
 		</div>
 	{% endfor %}
 {% endif %}
