@@ -126,6 +126,8 @@ def quiz_results_attempts(request,quiz_id):
     except Quiz.DoesNotExist:
         raise Http404
     attempts = QuizAttempt.objects.filter(quiz=quiz).order_by('-attempt_date')
+    for a in attempts:
+        a.responses = QuizAttemptResponse.objects.filter(quizattempt=a)
     return render_to_response('mquiz/quiz/results/attempts.html',{'quiz':quiz,'attempts':attempts }, context_instance=RequestContext(request))
 
 def my_results(request):

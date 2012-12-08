@@ -27,7 +27,7 @@ class Question(models.Model):
     
     def get_maxscore(self):
         props = QuestionProps.objects.get(question=self,name='maxscore')
-        return props.value;
+        return float(props.value);
 
 class Response(models.Model):
     owner = models.ForeignKey(User)
@@ -101,3 +101,8 @@ class QuizAttemptResponse(models.Model):
     question = models.ForeignKey(Question)
     score = models.DecimalField(decimal_places=2, max_digits=6)
     text = models.TextField(blank=True)
+    
+    def get_score_percent(self):
+        percent = int(round(float(self.score) * 100 / self.question.get_maxscore()))
+        return percent
+    

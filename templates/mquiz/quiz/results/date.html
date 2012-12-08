@@ -1,9 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% block content %}
-{% include "mquiz/includes/results_header.html" %}
-<script type='text/javascript' src='https://www.google.com/jsapi'></script>
-<script type="text/javascript">
+{% block extra_scripts %}
+	<script type='text/javascript' src='https://www.google.com/jsapi'></script>
+	<script type="text/javascript">
 
 	// Load the Visualization API and the piechart package.
 	google.load('visualization', '1.0', {'packages':['corechart']});
@@ -31,6 +30,11 @@
 							});
       }
 </script>
+{% endblock extra_scripts %}
+
+{% block content %}
+{% include "mquiz/includes/results_header.html" %}
+
 
 <div id="attempts_chart_div" class="graph">{% trans 'graph_generating'%}</div>
 

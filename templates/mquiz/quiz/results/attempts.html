@@ -1,5 +1,27 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% block extra_scripts %}
+	<script type="text/javascript" src="/static/mquiz/mobile/lib/jquery-1.8.2.min.js"></script>
+	<script type="text/javascript">
+		function init(){
+			$('div[name=al]').each(function(i){
+				$('#d'+$(this).attr('id')).hide();
+				$(this).toggle(function(){
+								var id= $(this).attr('id');
+								$('#d'+id).show('blind');
+							},
+							function (){
+								var id= $(this).attr('id');
+								$('#d'+id).hide('blind');
+							});
+				}
+			);
+		}
+	</script>
+{% endblock extra_scripts %}
+{% block extra_body %}
+onload="init();"
+{% endblock extra_body %}
 {% block content %}
 {% include "mquiz/includes/results_header.html" %}
 
@@ -9,6 +31,18 @@
 		<div class='attemptname'>{{ a.user.first_name }} {{ a.user.last_name }}</div>
 		<div class='attemptscore'>{{ a.get_score_percent }} %</div>
 		<div style='clear:both'></div>
+		<div id='d{{ a.id }}'>
+		{% for r in a.responses %}
+			<div class='attemptdetail'>
+				<div class='adq'>{{ r.question.title }}</div>
+				<div class='adrtext'>{{ r.text }}</div>
+				<div class='adscore'>{{ r.get_score_percent }} %</div>
+				<div style='clear:both'></div>
+			</div>
+		{% endfor %}
+		</div>
 	</div>
 {% endfor %}
+
+
 {% endblock %}

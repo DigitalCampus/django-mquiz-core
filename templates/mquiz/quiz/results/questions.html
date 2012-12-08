@@ -1,33 +1,37 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% block extra_scripts %}
+	<script type='text/javascript' src='https://www.google.com/jsapi'></script>
+	<script type="text/javascript">
+		google.load("visualization", "1", {packages:["corechart"]});
+		google.setOnLoadCallback(drawChart);
+		function drawChart() {
+			var data = new google.visualization.DataTable();
+			data.addColumn('string', 'Question Ref');
+			data.addColumn('number', 'Average Score');
+			data.addRows({{ data|length }});
+	
+			{% for k,v in data.items %}
+				data.setValue({{ forloop.counter0 }},0,'{{ k }}');
+				data.setValue({{ forloop.counter0 }},1,{{ v }});
+			{% endfor %}
+	
+			var chart = new google.visualization.BarChart(document.getElementById('bar_div'));
+			chart.draw(data, {
+					width: 900, 
+					height: 600,
+					hAxis: {minValue:0},
+					vAxis: {title: 'Question'},
+					chartArea:{left:200,top:50,width:"60%",height:"75%"}
+			});
+	}
+	</script>
+{% endblock extra_scripts %}
+
 {% block content %}
 {% include "mquiz/includes/results_header.html" %}
 
-<script type='text/javascript' src='https://www.google.com/jsapi'></script>
-<script type="text/javascript">
-	google.load("visualization", "1", {packages:["corechart"]});
-	google.setOnLoadCallback(drawChart);
-	function drawChart() {
-		var data = new google.visualization.DataTable();
-		data.addColumn('string', 'Question Ref');
-		data.addColumn('number', 'Average Score');
-		data.addRows({{ data|length }});
 
-		{% for k,v in data.items %}
-			data.setValue({{ forloop.counter0 }},0,'{{ k }}');
-			data.setValue({{ forloop.counter0 }},1,{{ v }});
-		{% endfor %}
-
-		var chart = new google.visualization.BarChart(document.getElementById('bar_div'));
-		chart.draw(data, {
-				width: 900, 
-				height: 600,
-				hAxis: {minValue:0},
-				vAxis: {title: 'Question'},
-				chartArea:{left:200,top:50,width:"60%",height:"75%"}
-		});
-}
-</script>
 <div id="bar_div"></div>
 
 {% endblock %}
