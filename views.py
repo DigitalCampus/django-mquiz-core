@@ -7,8 +7,9 @@ from django.forms.formsets import formset_factory
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.conf import settings
+from django.http import Http404
 import datetime
-from mquiz.models import Quiz, Question, Response, QuizAttempt
+from mquiz.models import Quiz, Question, Response, QuizAttempt, QuizAttemptResponse
 from forms import QuizForm, QuestionForm, ResponseForm,BaseQuestionFormSet
 
 def home_view(request):
@@ -63,10 +64,13 @@ def browse(request, letter='A'):
     return render(request, 'mquiz/browse.html', {'letters': letters, 'quizzes': quizzes })
 
 def quiz_results_date(request,quiz_id):
-    quiz = Quiz.objects.get(pk=quiz_id)
+    try:
+        quiz = Quiz.objects.get(pk=quiz_id,draft=0,deleted=0)
+    except Quiz.DoesNotExist:
+        raise Http404
     dates = []
     startdate = datetime.datetime.now()
-    for i in range(14,0,-1):
+    for i in range(14,-1,-1):
         temp = startdate - datetime.timedelta(days=i)
         day = temp.strftime("%d")
         month = temp.strftime("%m")
@@ -76,7 +80,10 @@ def quiz_results_date(request,quiz_id):
     return render_to_response('mquiz/quiz/results/date.html',{'quiz':quiz, 'dates':dates }, context_instance=RequestContext(request))
 
 def quiz_results_score(request,quiz_id):
-    quiz = Quiz.objects.get(pk=quiz_id)
+    try:
+        quiz = Quiz.objects.get(pk=quiz_id,draft=0,deleted=0)
+    except Quiz.DoesNotExist:
+        raise Http404
     attempts = QuizAttempt.objects.filter(quiz=quiz)
     data = {}
     for a in attempts:
@@ -88,13 +95,36 @@ def quiz_results_score(request,quiz_id):
     return render_to_response('mquiz/quiz/results/score.html',{'quiz':quiz,'data':data }, context_instance=RequestContext(request))
 
 def quiz_results_questions(request,quiz_id):
-    quiz = Quiz.objects.get(pk=quiz_id)
-    return render_to_response('mquiz/quiz/results/questions.html',{'quiz':quiz }, context_instance=RequestContext(request))
+    try:
+        quiz = Quiz.objects.get(pk=quiz_id,draft=0,deleted=0)
+    except Quiz.DoesNotExist:
+        raise Http404
+    questions = Question.objects.filter(quiz=quiz)
+    data = {}
+    for q in questions:
+        maxscore = float(q.get_maxscore())
+        responses = QuizAttemptResponse.objects.filter(question=q)
+        maxtotal = 0
+        usertotal = 0 
+        for r in responses:
+            maxtotal = maxtotal + maxscore
+            usertotal = usertotal + float(r.score)
+    
+        if maxtotal > 0:
+            data[q.title] = usertotal/maxtotal
+        else:
+            data[q.title] = 0
+
+    return render_to_response('mquiz/quiz/results/questions.html',{'quiz':quiz,'data':data }, context_instance=RequestContext(request))
 
 def quiz_results_attempts(request,quiz_id):
-    quiz = Quiz.objects.get(pk=quiz_id)
-    # TODO - check current user is owner
-    return render_to_response('mquiz/quiz/results/attempts.html',{'quiz':quiz }, context_instance=RequestContext(request))
+    try:
+        # check current user is owner
+        quiz = Quiz.objects.get(pk=quiz_id,owner=request.user)
+    except Quiz.DoesNotExist:
+        raise Http404
+    attempts = QuizAttempt.objects.filter(quiz=quiz).order_by('-attempt_date')
+    return render_to_response('mquiz/quiz/results/attempts.html',{'quiz':quiz,'attempts':attempts }, context_instance=RequestContext(request))
 
 def my_results(request):
     results = QuizAttempt.objects.filter(user = request.user).order_by('-attempt_date')

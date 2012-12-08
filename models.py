@@ -24,6 +24,10 @@ class Question(models.Model):
     type = models.CharField(max_length=15,choices=QUESTION_TYPES, default='multichoice') 
     def __unicode__(self):
         return self.title
+    
+    def get_maxscore(self):
+        props = QuestionProps.objects.get(question=self,name='maxscore')
+        return props.value;
 
 class Response(models.Model):
     owner = models.ForeignKey(User)
