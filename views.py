@@ -53,6 +53,11 @@ def create_quiz(request):
 
     return render(request, 'mquiz/quiz/quiz.html', {'quiz_form': quiz_form,'question_formset':question_formset})
 
+def edit_quiz(request,quiz_id):
+    pass
+
+def delete_quiz(request,quiz_id):
+    pass
 
 def browse(request, letter='A'):
     letters = []
@@ -135,4 +140,15 @@ def my_results(request):
     return render_to_response('mquiz/my_results.html', {'results': results}, context_instance=RequestContext(request))
 
 def manage_view(request):
-    pass
+    quizzes = Quiz.objects.filter(owner=request.user).order_by('title')
+    for q in quizzes:
+        attempts = QuizAttempt.objects.filter(quiz=q)
+        q.no_attempts = attempts.count()
+        total = 0
+        for a in attempts:
+            total = total + a.get_score_percent()
+        if q.no_attempts > 0:
+            q.avg_score = int(total/q.no_attempts)
+        else:
+            q.avg_score = 0
+    return render_to_response('mquiz/manage.html',{'quizzes':quizzes}, context_instance=RequestContext(request))

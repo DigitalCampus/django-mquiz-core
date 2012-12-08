@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<h2>{% trans 'page_title_manage_quizzes' %}</h2>
+
+{% if quizzes %}
+	<div id='th' class='quizlist'>
+		<div class='quiztitle'>{% trans 'table_header_quiz_title' %}</div>
+		<div class='quizattempts'>{% trans 'table_header_quiz_attempts' %}</div>
+		<div class='quizavg'>{% trans 'table_header_quiz_average_score' %}</div>
+		<div class='quizopts'>{% trans 'table_header_quiz_options' %}</div>
+		<div style='clear:both'></div>
+	</div>
+	{% for q in quizzes %}
+		<div id='{{ q.id }}' class='quizlist'>
+			<div class='quiztitle'><a href="{% url mquiz_results_date q.id %}">{{ q.title }}</a></div>
+			<div class='quizattempts'>{{ q.no_attempts }}</div>
+			<div class='quizavg'>{% if q.no_attempts > 0 %} {{q.avg_score}}%{% else %}--{% endif %}</div>
+			<div class='quizopts'>
+				{% if q.no_attempts == 0 %}
+					<a href="{% url mquiz_edit q.id %}">{% trans 'quiz_options_edit' %}</a>
+				{% endif %}
+				<a href="{% url mquiz_delete q.id %}">{% trans 'quiz_options_delete' %}</a>
+				{% if q.no_attempts > 0 %}
+					<a href="{% url mquiz_results_attempts q.id %}">{% trans 'quiz_options_detailed_results' %}</a>
+				{% endif %}
+			</div>
+			<div style='clear:both'></div>
+		</div>
+	{% endfor %}
+{% else %}
+	{% url mquiz_create as url_create %}
+	{% blocktrans %}
+		<p>You haven't created any quizzes yet. Why not <a href="{{ url_create }}">create one</a>?</p>
+	{% endblocktrans %}
+
+{% endif %}
+
+{% endblock %}
