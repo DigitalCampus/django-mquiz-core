@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% block content %}
-
-
 {% include "mquiz/includes/results_header.html" %}
 
-
+{% for a in attempts %}
+	<div id='{{ a.id }}' class='attemptlist' name='al'>
+		<div class='attemptdate'>{{ a.attempt_date }}</div>
+		<div class='attemptname'>{{ a.user.first_name }} {{ a.user.last_name }}</div>
+		<div class='attemptscore'>{{ a.get_score_percent }} %</div>
+		<div style='clear:both'></div>
+	</div>
+{% endfor %}
 {% endblock %}

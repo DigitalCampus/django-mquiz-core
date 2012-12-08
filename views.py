@@ -63,6 +63,7 @@ def browse(request, letter='A'):
     quizzes = Quiz.objects.filter(title__istartswith = letter)
     return render(request, 'mquiz/browse.html', {'letters': letters, 'quizzes': quizzes })
 
+# TODO? move these to separate reporting module?
 def quiz_results_date(request,quiz_id):
     try:
         quiz = Quiz.objects.get(pk=quiz_id,draft=0,deleted=0)
@@ -95,6 +96,7 @@ def quiz_results_score(request,quiz_id):
     return render_to_response('mquiz/quiz/results/score.html',{'quiz':quiz,'data':data }, context_instance=RequestContext(request))
 
 def quiz_results_questions(request,quiz_id):
+    # TODO - this could be done more efficiently?
     try:
         quiz = Quiz.objects.get(pk=quiz_id,draft=0,deleted=0)
     except Quiz.DoesNotExist:
