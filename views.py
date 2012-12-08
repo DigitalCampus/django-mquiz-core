@@ -77,7 +77,15 @@ def quiz_results_date(request,quiz_id):
 
 def quiz_results_score(request,quiz_id):
     quiz = Quiz.objects.get(pk=quiz_id)
-    return render_to_response('mquiz/quiz/results/score.html',{'quiz':quiz }, context_instance=RequestContext(request))
+    attempts = QuizAttempt.objects.filter(quiz=quiz)
+    data = {}
+    for a in attempts:
+        score = a.get_score_percent()
+        if score in data:
+            data[score] = data[score] + 1
+        else:
+            data[score] = 1
+    return render_to_response('mquiz/quiz/results/score.html',{'quiz':quiz,'data':data }, context_instance=RequestContext(request))
 
 def quiz_results_questions(request,quiz_id):
     quiz = Quiz.objects.get(pk=quiz_id)
@@ -85,6 +93,7 @@ def quiz_results_questions(request,quiz_id):
 
 def quiz_results_attempts(request,quiz_id):
     quiz = Quiz.objects.get(pk=quiz_id)
+    # TODO - check current user is owner
     return render_to_response('mquiz/quiz/results/attempts.html',{'quiz':quiz }, context_instance=RequestContext(request))
 
 def my_results(request):

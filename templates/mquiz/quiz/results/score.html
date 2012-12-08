@@ -1,9 +1,30 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% block content %}
-
-
 {% include "mquiz/includes/results_header.html" %}
+<script type='text/javascript' src='https://www.google.com/jsapi'></script>
+<script type="text/javascript">
+	google.load("visualization", "1", {packages:["corechart"]});
+	google.setOnLoadCallback(drawChart);
+	function drawChart() {
+		var data = new google.visualization.DataTable();
+		data.addColumn('string', 'Score');
+		data.addColumn('number', 'NoScores');
+		data.addRows({{ data|length }});
 
+		{% for k,v in data.items %}
+			data.setValue({{ forloop.counter0 }},0,'scored {{ k }} %');
+			data.setValue({{ forloop.counter0 }},1,{{ v }});
+		{% endfor %}
+	
+			var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+			chart.draw(data, {
+					width: 800, 
+					height: 400, 
+					chartArea:{left:50,top:50,width:"80%",height:"75%"}
+				});
+		}
+		</script>
+		<div id="chart_div">{% trans 'graph_generating'%}</div>
 
 {% endblock %}
