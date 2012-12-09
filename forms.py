@@ -63,8 +63,8 @@ class QuestionForm(forms.Form):
                             resp = float(response)
                         except:
                             resp = ""
-                        if not isinstance(resp, (int, float, decimal.Decimal)):
-                            raise forms.ValidationError( _(u"For numerical question types the answer must be a number"+str(resp)))
+                        if not isinstance(resp, float):
+                            raise forms.ValidationError( _(u"For numerical question types the answer must be a number"))
                     # if matching then must be separated by a pipe char
                     if type == 'matching':
                         matches = re.split("\|",response)
@@ -75,22 +75,14 @@ class QuestionForm(forms.Form):
             # multichoice > 1
             if type=='multichoice' and no_actual_responses < 2:
                 raise forms.ValidationError( _(u"Multiple choice questions should have 2 or more possible responses"))
-            # multiselect > 1 and scores > 1
+            # multiselect > 1 and TODO scores > 1
             if type=='multiselect' and no_actual_responses < 2:
                 raise forms.ValidationError( _(u"Multiple select questions should have 2 or more possible responses"))
             # matching > 1
+            if type=='matching' and no_actual_responses < 2:
+                raise forms.ValidationError( _(u"Matching questions should have 2 or more possible responses"))
+            
             if total_score == 0:
                 raise forms.ValidationError( _(u"You must enter at least one non-zero score"))
-            
-            
+             
         return cleaned_data
-    
-class ResponseForm(ModelForm):
-    class Meta:
-        model = Response
-        fields = ('title', 'score')
-        widgets = {     
-            'title': forms.TextInput(),
-            'score': forms.DecimalField,
-        }
-

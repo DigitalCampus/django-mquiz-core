@@ -10,11 +10,11 @@ from django.conf import settings
 from django.http import Http404
 import datetime
 from mquiz.models import Quiz, Question, Response, QuizAttempt, QuizAttemptResponse, QuizQuestion, QuestionProps, QuizProps
-from forms import QuizForm, QuestionForm, ResponseForm
+from forms import QuizForm, QuestionForm
 from django.utils.translation import ugettext as _
 
 def home_view(request):
-    latest_quiz_list = Quiz.objects.filter(draft=0).order_by('-created_date')[:10]
+    latest_quiz_list = Quiz.objects.filter(draft=0,deleted=0).order_by('-created_date')[:10]
     return render_to_response('mquiz/home.html',{'latest_quiz_list': latest_quiz_list}, context_instance=RequestContext(request))
 
 def about_view(request):
@@ -234,7 +234,7 @@ def process_quiz(request,quiz,question_formset):
                 response = question_form.cleaned_data.get("response"+str(i)).strip()
                 rscore = question_form.cleaned_data.get("score"+str(i))
                 if response != "":
-                    # TODO checks based on question type
+                    # TODO question type processing (for numerical questions only really)
                     # if numerical then split on tolerance
                     r = Response()
                     r.owner = request.user
@@ -243,6 +243,7 @@ def process_quiz(request,quiz,question_formset):
                     r.title = response
                     r.order = i
                     r.save()
+                    # check maxscore for shortanswer/numerical questions where there may be more than one score, but only 1 should be the max
                     question_maxscore = question_maxscore + rscore
                     
         # add maxscore for question

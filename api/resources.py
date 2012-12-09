@@ -18,6 +18,7 @@ from mquiz.profile.forms import RegisterForm
 from django.conf.urls.defaults import url
 from django.core.paginator import Paginator, InvalidPage
 from django.db.models import Q
+from django.utils.translation import ugettext as _
 
 class QuizOwnerValidation(Validation):
     def is_valid(self, bundle, request=None):
@@ -26,8 +27,7 @@ class QuizOwnerValidation(Validation):
         errors = {}
         quiz = QuizResource().get_via_uri(bundle.data['quiz'])
         if quiz.owner.id != bundle.request.user.id:
-            # TODO translation
-            errors['error_message'] = "You are not the owner of this quiz"
+            errors['error_message'] = _(u"You are not the owner of this quiz")
         return errors
     
 class QuestionOwnerValidation(Validation):
@@ -37,8 +37,7 @@ class QuestionOwnerValidation(Validation):
         errors = {}
         question = QuestionResource().get_via_uri(bundle.data['question'])
         if question.owner.id != bundle.request.user.id:
-            # TODO translation
-            errors['error_message'] = "You are not the owner of this question"
+            errors['error_message'] = _(u"You are not the owner of this question")
         return errors
     
 class ResponseOwnerValidation(Validation):
@@ -48,8 +47,7 @@ class ResponseOwnerValidation(Validation):
         errors = {}
         response = ResponseResource().get_via_uri(bundle.data['response'])
         if response.owner.id != bundle.request.user.id:
-            # TODO translation
-            errors['error_message'] = "You are not the owner of this response"
+            errors['error_message'] = _(u"You are not the owner of this response")
         return errors 
    
 class UserResource(ModelResource):
@@ -67,7 +65,7 @@ class UserResource(ModelResource):
         username = bundle.data['username']
         password = bundle.data['password']
         if not username or not password:
-            raise BadRequest('Username or password missing')
+            raise BadRequest(_(u'Username or password missing'))
         
         u = authenticate(username=username, password=password)
         if u is not None:
@@ -75,10 +73,10 @@ class UserResource(ModelResource):
                 login(request, u)
             else:
                 # TODO - should raise 401 error
-                raise BadRequest('Authentication failure')
+                raise BadRequest(_(u'Authentication failure'))
         else:
             # TODO should raise 401 error
-            raise BadRequest('Authentication failure')
+            raise BadRequest(_(u'Authentication failure'))
 
         del bundle.data['password']
         key = ApiKey.objects.get(user = u)
@@ -325,7 +323,7 @@ class RegisterResource(ModelResource):
             bundle.data['api_key'] = key.key
         except IntegrityError:
             # TODO translation
-            raise BadRequest('Username "'+username+'" already in use, please select another')
+            raise BadRequest(_(u'Username "%s" already in use, please select another' % username))
         del bundle.data['passwordagain']
         del bundle.data['password']
         del bundle.data['firstname']
