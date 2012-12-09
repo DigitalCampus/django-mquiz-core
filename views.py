@@ -10,7 +10,7 @@ from django.conf import settings
 from django.http import Http404
 import datetime
 from mquiz.models import Quiz, Question, Response, QuizAttempt, QuizAttemptResponse
-from forms import QuizForm, QuestionForm, ResponseForm,BaseQuestionFormSet
+from forms import QuizForm, QuestionForm, ResponseForm
 
 def home_view(request):
     latest_quiz_list = Quiz.objects.filter(draft=0).order_by('-created_date')[:10]
@@ -31,12 +31,12 @@ def terms_view(request):
                                   context_instance=RequestContext(request))
                      
 def create_quiz(request):
-    QuestionFormSet = formset_factory(QuestionForm,extra=5,formset=BaseQuestionFormSet)
+    QuestionFormSet = formset_factory(QuestionForm, extra=3, max_num=10)
     
     if request.method == 'POST':
     
         quiz_form = QuizForm(request.POST)
-        question_formset = forms.QuestionFormSet(request.POST,)
+        question_formset = QuestionFormSet(request.POST,)
         
         if quiz_form.is_valid():
             quiz = quiz_form.save(commit=False)
@@ -74,9 +74,14 @@ def quiz_results_date(request,quiz_id):
         quiz = Quiz.objects.get(pk=quiz_id,draft=0,deleted=0)
     except Quiz.DoesNotExist:
         raise Http404
+    
+    no_attempts = QuizAttempt.objects.filter(quiz=quiz).count()
+    if no_attempts == 0:
+         return render_to_response('mquiz/quiz/results/no_attempts.html',{'quiz':quiz}, context_instance=RequestContext(request))
+    
     dates = []
     startdate = datetime.datetime.now()
-    for i in range(14,-1,-1):
+    for i in range(31,-1,-1):
         temp = startdate - datetime.timedelta(days=i)
         day = temp.strftime("%d")
         month = temp.strftime("%m")
@@ -91,6 +96,9 @@ def quiz_results_score(request,quiz_id):
     except Quiz.DoesNotExist:
         raise Http404
     attempts = QuizAttempt.objects.filter(quiz=quiz)
+    if attempts.count() == 0:
+         return render_to_response('mquiz/quiz/results/no_attempts.html',{'quiz':quiz}, context_instance=RequestContext(request))
+    
     data = {}
     for a in attempts:
         score = a.get_score_percent()
@@ -106,6 +114,12 @@ def quiz_results_questions(request,quiz_id):
         quiz = Quiz.objects.get(pk=quiz_id,draft=0,deleted=0)
     except Quiz.DoesNotExist:
         raise Http404
+    
+    no_attempts = QuizAttempt.objects.filter(quiz=quiz).count()
+    if no_attempts == 0:
+         return render_to_response('mquiz/quiz/results/no_attempts.html',{'quiz':quiz}, context_instance=RequestContext(request))
+    
+    
     questions = Question.objects.filter(quiz=quiz)
     data = {}
     for q in questions:
@@ -131,6 +145,9 @@ def quiz_results_attempts(request,quiz_id):
     except Quiz.DoesNotExist:
         raise Http404
     attempts = QuizAttempt.objects.filter(quiz=quiz).order_by('-attempt_date')
+    if attempts.count() == 0:
+         return render_to_response('mquiz/quiz/results/no_attempts.html',{'quiz':quiz}, context_instance=RequestContext(request))
+    
     for a in attempts:
         a.responses = QuizAttemptResponse.objects.filter(quizattempt=a)
     return render_to_response('mquiz/quiz/results/attempts.html',{'quiz':quiz,'attempts':attempts }, context_instance=RequestContext(request))
