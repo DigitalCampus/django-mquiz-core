@@ -5,6 +5,7 @@ from mquiz.models import Quiz, Question, Response
 from django.utils.translation import ugettext as _
 import decimal
 import re
+from django.forms.formsets import BaseFormSet
 
 class QuizForm(ModelForm):
     class Meta:
@@ -14,7 +15,12 @@ class QuizForm(ModelForm):
             'title': forms.TextInput(attrs={'size':'60'}),     
             'description': forms.Textarea(attrs={'cols': 80, 'rows': 3}),
         }
-    
+        
+class BaseQuestionFormSet(BaseFormSet):
+    def clean(self):
+        if self.total_form_count() == 0:
+            raise forms.ValidationError(_(u"You must enter at least one question"))
+        
 class QuestionForm(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'size':'60'}))
     type = forms.ChoiceField(choices=Question.QUESTION_TYPES)
