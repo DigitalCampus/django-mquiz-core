@@ -24,9 +24,9 @@
        </script>
 {% endblock extra_scripts %}
 {% block content %}
-<h2>{% trans 'page_title_create_quiz' %}</h2>
+<h2>{{ title }}</h2>
 
-<form action="{% url mquiz_create %}" method="post" id="quizform">
+<form action="" method="post" id="quizform">
 	{% csrf_token %}
 	<div class="fieldWrapper">
 		<div class="fieldErrorWrapper">{{ quiz_form.title.errors }}</div>

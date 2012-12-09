@@ -59,8 +59,12 @@ class QuestionForm(forms.Form):
                     # checks based on question type
                     # if numerical then must be numerical answer
                     if type == 'numerical':
-                        if not isinstance(response, (int, float, decimal.Decimal)):
-                            raise forms.ValidationError( _(u"For numerical question types the answer must be a number"))
+                        try:
+                            resp = float(response)
+                        except:
+                            resp = ""
+                        if not isinstance(resp, (int, float, decimal.Decimal)):
+                            raise forms.ValidationError( _(u"For numerical question types the answer must be a number"+str(resp)))
                     # if matching then must be separated by a pipe char
                     if type == 'matching':
                         matches = re.split("\|",response)
@@ -72,6 +76,8 @@ class QuestionForm(forms.Form):
             if type=='multichoice' and no_actual_responses < 2:
                 raise forms.ValidationError( _(u"Multiple choice questions should have 2 or more possible responses"))
             # multiselect > 1 and scores > 1
+            if type=='multiselect' and no_actual_responses < 2:
+                raise forms.ValidationError( _(u"Multiple select questions should have 2 or more possible responses"))
             # matching > 1
             if total_score == 0:
                 raise forms.ValidationError( _(u"You must enter at least one non-zero score"))
