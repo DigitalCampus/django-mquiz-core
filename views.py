@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.http import Http404
 import datetime
-from mquiz.models import Quiz, Question, Response, QuizAttempt, QuizAttemptResponse
+from mquiz.models import Quiz, Question, Response, QuizAttempt, QuizAttemptResponse, QuizQuestion, QuestionProps, QuizProps
 from forms import QuizForm, QuestionForm, ResponseForm
 
 def home_view(request):
@@ -34,19 +34,70 @@ def create_quiz(request):
     QuestionFormSet = formset_factory(QuestionForm, extra=3, max_num=10)
     
     if request.method == 'POST':
-    
         quiz_form = QuizForm(request.POST)
         question_formset = QuestionFormSet(request.POST,)
         
         if quiz_form.is_valid():
             quiz = quiz_form.save(commit=False)
+            quiz.lastupdated_date = datetime.datetime.now()
             quiz.owner = request.user
             quiz.save()
+            quiz_maxscore = 0
             
-            #if question_formset.is_valid():
-                # do something here 
-                     
-            #return HttpResponseRedirect('saved/')
+            if question_formset.is_valid():
+                for idx, question_form in enumerate(question_formset):
+                    # delete any existing questions for this quiz
+                    
+                    # add each question and response
+                    title = question_form.cleaned_data.get("title").strip()
+                    type = question_form.cleaned_data.get("type").strip()
+                    question = Question()
+                    question.title = title
+                    question.type = type
+                    question.owner = request.user
+                    question.save()
+                    
+                    question_maxscore = 0
+                    # add responses
+                    needs_answers = True
+                    if type == 'essay' or type=='info':
+                        needs_answers = False
+                    
+                    if needs_answers:
+                        for i in range(1,4):
+                            response = question_form.cleaned_data.get("response"+str(i)).strip()
+                            rscore = question_form.cleaned_data.get("score"+str(i))
+                            if response != "":
+                                # TODO checks based on question type
+                                # if numerical then split on tolerance
+                                r = Response()
+                                r.owner = request.user
+                                r.question = question
+                                r.score = rscore
+                                r.title = response
+                                r.order = i
+                                r.save()
+                                question_maxscore = question_maxscore + rscore
+                                
+                    # add maxscore for question
+                    qp = QuestionProps()
+                    qp.question = question
+                    qp.name = 'maxscore'
+                    qp.value = question_maxscore
+                    qp.save()
+                    
+                    quiz_maxscore = quiz_maxscore + question_maxscore
+                    
+                    # add question to quiz
+                    quizquestion = QuizQuestion()
+                    quizquestion.quiz = quiz
+                    quizquestion.question = question
+                    quizquestion.order = idx+1
+                    quizquestion.save()
+                    
+                    #
+                  
+                return HttpResponseRedirect('saved/')
     else:
         quiz_form = QuizForm() # An unbound form
         question_formset = QuestionFormSet()

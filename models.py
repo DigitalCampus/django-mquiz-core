@@ -11,7 +11,7 @@ class Question(models.Model):
     QUESTION_TYPES = (
         ('multichoice', 'Multiple choice'),
         ('shortanswer', 'Short answer'),
-        ('match', 'Matching'),
+        ('matching', 'Matching'),
         ('numerical', 'Numerical'),
         ('essay', 'Essay'),
         ('multiselect', 'Multiple select'),

@@ -5,7 +5,21 @@
 <script type="text/javascript" src="/static/mquiz/js/jquery.formset.min.js"></script>
 <script type="text/javascript">
 		$(function() {
-               $('.question').formset();
+			$('.question').formset(
+				{formCssClass: 'dynamic-quiz-form',
+					addText:'Add another question',
+					deleteText:'Remove this question',
+					added: function(row){
+						// console.log("added");
+						// TODO should handle the renumbering here
+					},
+					deleted: function(row){
+						// console.log("removed");
+						// TODO should handle the renumbering here
+					},
+					addCssClass:'quiz-add-question',
+					deleteCssClass:'quiz-delete-question'
+				});
            });
        </script>
 {% endblock extra_scripts %}
@@ -29,6 +43,8 @@
 		{{ question_formset.management_form }}
 	 	{% for form in question_formset.forms %}
 	 		<div class="question">
+		 		<div class="errorWrapper">{{ form.non_field_errors }}</div>
+		 		
 	        	<div class="fieldWrapper">
 					<div class="fieldErrorWrapper">{{ form.title.errors }}</div>
 					<div class="fieldLabelWrapper">{% trans 'form_field_question_title' %}</div>
@@ -59,7 +75,9 @@
 					<div class="responsetext">{{ form.response4 }}</div>
 					<div class="responsescore">{{ form.score4 }}</div>
 				</div>
+				<div style="clear:both"></div>
 			</div>
+			
         {% endfor %}
 	<div class="fieldWrapper">
         <div class="fieldLabelWrapper">&nbsp;</div>
