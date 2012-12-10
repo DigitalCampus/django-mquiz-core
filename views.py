@@ -15,12 +15,14 @@ from django.utils.translation import ugettext as _
 
 def home_view(request):
     latest_quiz_list = Quiz.objects.filter(draft=0,deleted=0).order_by('-created_date')[:10]
-    return render_to_response('mquiz/home.html',{'latest_quiz_list': latest_quiz_list}, context_instance=RequestContext(request))
+    return render_to_response('mquiz/home.html',
+                              {'latest_quiz_list': latest_quiz_list}, 
+                              context_instance=RequestContext(request))
 
 def about_view(request):
-        return render_to_response('mquiz/about.html', 
-                                  {'settings': settings},
-                                  context_instance=RequestContext(request))
+    return render_to_response('mquiz/about.html', 
+                              {'settings': settings},
+                              context_instance=RequestContext(request))
 
 def contact_view(request):
         return render_to_response('mquiz/contact.html', 

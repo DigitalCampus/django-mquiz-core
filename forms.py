@@ -27,12 +27,16 @@ class QuestionForm(forms.Form):
     # TODO this is really wrong - but couldn't get this working with inline formsets of ResponseForms
     response1 = forms.CharField(required=False)
     score1 = forms.DecimalField(required=False,initial=0)
+    feedback1 = forms.CharField(required=False)
     response2 = forms.CharField(required=False)
     score2 = forms.DecimalField(required=False,initial=0)
+    feedback2 = forms.CharField(required=False)
     response3 = forms.CharField(required=False)
     score3 = forms.DecimalField(required=False,initial=0)
+    feedback3 = forms.CharField(required=False)
     response4 = forms.CharField(required=False)
     score4 = forms.DecimalField(required=False,initial=0)
+    feedback4    = forms.CharField(required=False)
     
     def clean(self):
         cleaned_data = self.cleaned_data

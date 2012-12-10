@@ -26,7 +26,7 @@ def create_quiz(request):
             quiz.owner = request.user
             quiz.save()
             process_quiz(request, quiz, question_formset)
-            return HttpResponseRedirect('saved/')
+            return HttpResponseRedirect('../%d/saved/' % quiz.id)
     else:
         quiz_form = QuizForm() # An unbound form
         question_formset = QuestionFormSet()
@@ -56,7 +56,7 @@ def edit_quiz(request,quiz_id):
             QuizProps.objects.filter(quiz=quiz).delete()
             
             process_quiz(request,quiz,question_formset)
-            return HttpResponseRedirect('saved/')
+            return HttpResponseRedirect('../saved/')
     else:
         quiz_form = QuizForm(initial={'title':quiz.title,
                                     'description':quiz.description})
@@ -78,6 +78,16 @@ def edit_quiz(request,quiz_id):
 def delete_quiz(request,quiz_id):
     pass
 
+def saved_quiz(request, quiz_id):
+    try:
+        # check only the owner can edit
+        quiz = Quiz.objects.get(pk=quiz_id,owner=request.user)
+    except Quiz.DoesNotExist:
+        raise Http404
+    return render_to_response('mquiz/quiz/saved.html', 
+                                  {'quiz': quiz},
+                                  context_instance=RequestContext(request))
+    
 def process_quiz(request,quiz,question_formset):
     
     quiz_maxscore = 0

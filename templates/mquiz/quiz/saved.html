@@ -3,10 +3,18 @@
 
 {% block content %}
 
-<h2>{% trans 'page_title_quiz' %}</h2>
+{% if quiz %}
+<h2>{{ quiz.title }}</h2>
 {% blocktrans %}
 <p>Your quiz has been saved</p>
 {% endblocktrans %}
+<ul>
+	<li><a href="{% url mquiz_mobile %}#{{quiz.id }}">View '{{ quiz.title }}'</a></li>
+	<li><a href="{% url mquiz_edit quiz.id %}">Edit your quiz</a></li>
+</ul>
+
+{% endif %}
+
 
 {% include "includes/messages.html" %}	
 {% endblock %}
