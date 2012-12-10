@@ -108,7 +108,9 @@ def process_quiz(request,quiz,question_formset):
         needs_answers = True
         if type == 'essay' or type=='info':
             needs_answers = False
-        
+        if type == 'essay':
+            question_maxscore = 1
+            
         if needs_answers:
             for i in range(1,4):
                 response = question_form.cleaned_data.get("response"+str(i)).strip()

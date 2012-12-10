@@ -4,24 +4,28 @@
 <script type="text/javascript" src="/static/mquiz/mobile/lib/jquery-1.8.2.min.js"></script>
 <script type="text/javascript" src="/static/mquiz/js/jquery.formset.min.js"></script>
 <script type="text/javascript">
-		$(function() {
-			$('.question').formset(
-				{formCssClass: 'dynamic-quiz-form',
-					addText:'Add another question',
-					deleteText:'Remove this question',
-					added: function(row){
-						// console.log("added");
-						// TODO should handle the renumbering here
-					},
-					deleted: function(row){
-						// console.log("removed");
-						// TODO should handle the renumbering here
-					},
-					addCssClass:'quiz-add-question',
-					deleteCssClass:'quiz-delete-question'
-				});
-           });
-       </script>
+	$(function() {
+		$('.question').formset(
+			{formCssClass: 'dynamic-quiz-form',
+				addText:'Add another question',
+				deleteText:'Remove this question',
+				added: function(row){
+					renumberQuestions();
+				},
+				removed: function(row){
+					renumberQuestions();
+				},
+				addCssClass:'quiz-add-question',
+				deleteCssClass:'quiz-delete-question'
+			});
+          });
+	
+	function renumberQuestions(){
+		$('.questionno').each(function(i){
+			$(this).text(i+1);
+		});
+	}
+</script>
 {% endblock extra_scripts %}
 {% block content %}
 <h2>{{ title }}</h2>
@@ -45,7 +49,7 @@
 	 		<div class="question">
 	        	<div class="fieldWrapper">
 					<div class="fieldErrorWrapper">{{ form.title.errors }}</div>
-					<div class="fieldLabelWrapper">{% trans 'form_field_question_title' %}</div>
+					<div class="fieldLabelWrapper"><strong>{% trans 'form_field_question_title' %} <span class="questionno">{{ forloop.counter }}</span></strong></div>
 					<div class="fieldInputWrapper">{{ form.title }}</div>
 				</div>
 				<div class="fieldWrapper">

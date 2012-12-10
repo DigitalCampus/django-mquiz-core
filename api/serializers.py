@@ -46,6 +46,8 @@ class QuizJSONSerializer(Serializer):
         qmaxscore = 0.0
         # remove intermediate quizquestion data
         for question in data['questions']:
+            del question['question']['owner']
+            del question['question']['resource_uri']
             if 'props' in question['question']:
                 question['question']['p'] = {}
                 for p in question['question']['props']:
@@ -63,6 +65,8 @@ class QuizJSONSerializer(Serializer):
             
            # for response in question['response']:
             for r in question['question']['responses']:
+                del r['question']
+                del r['resource_uri']
                 r['p'] = {}
                 for p in r['props']:
                     r['p'][p['name']] = p['value']

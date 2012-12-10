@@ -115,7 +115,6 @@ class QuizResource(ModelResource):
         self.throttle_check(request)
 
         # Do the query.
-        #sqs = SearchQuerySet().models(Note).load_all().auto_query(request.GET.get('q', ''))
         query = request.GET.get('q', '')
         searchresults = self._meta.queryset.filter(draft=0,deleted=0).filter(Q(title__icontains=query) | Q(description__icontains=query))
         paginator = Paginator(searchresults, 20)
@@ -133,7 +132,7 @@ class QuizResource(ModelResource):
             objects.append(bundle)
 
         object_list = {
-            'quizzes': objects,
+            'objects': objects,
         }
 
         self.log_throttled_access(request)
