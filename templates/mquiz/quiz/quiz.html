@@ -4,27 +4,27 @@
 <script type="text/javascript" src="/static/mquiz/mobile/lib/jquery-1.8.2.min.js"></script>
 <script type="text/javascript" src="/static/mquiz/js/jquery.formset.min.js"></script>
 <script type="text/javascript">
-	$(function() {
-		$('.question').formset(
-			{formCssClass: 'dynamic-quiz-form',
-				addText:'Add another question',
-				deleteText:'Remove this question',
-				added: function(row){
-					renumberQuestions();
-				},
-				removed: function(row){
-					renumberQuestions();
-				},
-				addCssClass:'quiz-add-question',
-				deleteCssClass:'quiz-delete-question'
-			});
-          });
-	
-	function renumberQuestions(){
-		$('.questionno').each(function(i){
-			$(this).text(i+1);
+$(function() {
+	$('.question').formset(
+		{formCssClass: 'dynamic-quiz-form',
+			addText:'Add another question',
+			deleteText:'Remove this question',
+			added: function(row){
+				renumberQuestions();
+			},
+			removed: function(row){
+				renumberQuestions();
+			},
+			addCssClass:'quiz-add-question',
+			deleteCssClass:'quiz-delete-question'
 		});
-	}
+});
+	
+function renumberQuestions(){
+	$('.questionno').each(function(i){
+		$(this).text(i+1);
+	});
+}
 </script>
 {% endblock extra_scripts %}
 {% block content %}
@@ -45,6 +45,11 @@
 	
 	<h3 class="formsection">{% trans 'form_section_questions' %}</h3>
 		{{ question_formset.management_form }}
+		{% if question_formset.non_form_errors %}
+			<div class="fieldWrapper">
+				<div class="fieldErrorWrapper">{{ question_formset.non_form_errors }}</div>
+			</div>
+		{% endif %}
 	 	{% for form in question_formset.forms %}
 	 		<div class="question">
 	        	<div class="fieldWrapper">
