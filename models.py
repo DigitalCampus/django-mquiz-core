@@ -93,7 +93,10 @@ class QuizAttempt(models.Model):
     agent = models.TextField(blank=True)
     
     def get_score_percent(self):
-        percent = int(round(self.score * 100 / self.maxscore))
+        if self.maxscore > 0:
+            percent = int(round(self.score * 100 / self.maxscore))
+        else:
+            percent = 0
         return percent
     
 class QuizAttemptResponse(models.Model):
@@ -103,6 +106,9 @@ class QuizAttemptResponse(models.Model):
     text = models.TextField(blank=True)
     
     def get_score_percent(self):
-        percent = int(round(float(self.score) * 100 / self.question.get_maxscore()))
+        if self.question.get_maxscore() > 0:
+            percent = int(round(float(self.score) * 100 / self.question.get_maxscore()))
+        else:
+            percent = 0
         return percent
     
