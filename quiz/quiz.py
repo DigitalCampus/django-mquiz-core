@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.http import Http404
 import datetime
-from mquiz.models import Quiz, Question, Response, QuizAttempt, QuizAttemptResponse, QuizQuestion, QuestionProps, QuizProps
+from mquiz.models import Quiz, Question, Response, QuizAttempt, QuizAttemptResponse, QuizQuestion, QuestionProps, QuizProps, ResponseProps
 from mquiz.forms import QuizForm, QuestionForm, BaseQuestionFormSet
 from django.utils.translation import ugettext as _
 
@@ -36,7 +36,7 @@ def create_quiz(request):
 def edit_quiz(request,quiz_id):
     try:
         # check only the owner can edit
-        quiz = Quiz.objects.get(pk=quiz_id,owner=request.user)
+        quiz = Quiz.objects.get(pk=quiz_id,deleted=0,owner=request.user)
     except Quiz.DoesNotExist:
         raise Http404
     # TODO check a quiz can't be edited if already has attempts not by the owner
@@ -49,6 +49,7 @@ def edit_quiz(request,quiz_id):
         if quiz_form.is_valid() and question_formset.is_valid():
             quiz.title = quiz_form.cleaned_data.get("title").strip()
             quiz.description = quiz_form.cleaned_data.get("description").strip()
+            quiz.lastupdated_date = datetime.datetime.now()
             quiz.save()
             
             # delete all quiz questions and props
@@ -70,6 +71,11 @@ def edit_quiz(request,quiz_id):
             for idx, r in enumerate(responses):
                 data['response'+str(idx+1)] = r.title
                 data['score'+str(idx+1)] = r.score
+                try:
+                    r_feedback = ResponseProps.objects.get(response=r,name='feedback')
+                    data['feedback'+str(idx+1)] = r_feedback.value
+                except:
+                    data['feedback'+str(idx+1)] = ""
             initial.append(data)
         question_formset = QuestionFormSet(initial=initial)
 
@@ -114,19 +120,28 @@ def process_quiz(request,quiz,question_formset):
         if needs_answers:
             for i in range(1,4):
                 response = question_form.cleaned_data.get("response"+str(i)).strip()
-                rscore = question_form.cleaned_data.get("score"+str(i))
+                r_score = question_form.cleaned_data.get("score"+str(i))
+                r_feedback = question_form.cleaned_data.get("feedback"+str(i)).strip()
                 if response != "":
                     # TODO question type processing (for numerical questions only really)
                     # if numerical then split on tolerance
                     r = Response()
                     r.owner = request.user
                     r.question = question
-                    r.score = rscore
+                    r.score = r_score
                     r.title = response
                     r.order = i
                     r.save()
+                    
+                    if r_feedback != "":
+                        rp = ResponseProps()
+                        rp.response = r
+                        rp.name = 'feedback'
+                        rp.value = r_feedback
+                        rp.save()
+                    
                     # check maxscore for shortanswer/numerical questions where there may be more than one score, but only 1 should be the max
-                    question_maxscore = question_maxscore + rscore
+                    question_maxscore = question_maxscore + r_score
                     
         # add maxscore for question
         qp = QuestionProps()
