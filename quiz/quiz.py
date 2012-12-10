@@ -82,8 +82,28 @@ def edit_quiz(request,quiz_id):
     return render(request, 'mquiz/quiz/quiz.html', {'title': _(u"Edit Quiz"), 'quiz_form': quiz_form,'question_formset':question_formset})
 
 def delete_quiz(request,quiz_id):
-    pass
+    try:
+        # check only the owner can delete
+        quiz = Quiz.objects.get(pk=quiz_id,deleted=0,owner=request.user)
+    except Quiz.DoesNotExist:
+        raise Http404
+    
+    if request.method == 'POST':
+        quiz.deleted= 1
+        quiz.save()
+        return HttpResponseRedirect('../deleted/')
+        
+    return render(request, 'mquiz/quiz/delete.html', {'title': _(u"Delete Quiz"), 'quiz':quiz})   
 
+def deleted_quiz(request,quiz_id):
+    try:
+        # check only the owner can delete
+        quiz = Quiz.objects.get(pk=quiz_id,deleted=1,owner=request.user)
+    except Quiz.DoesNotExist:
+        raise Http404
+    
+    return render(request, 'mquiz/quiz/deleted.html', {'title': _(u"Quiz Deleted"), 'quiz':quiz}) 
+    
 def saved_quiz(request, quiz_id):
     try:
         # check only the owner can edit

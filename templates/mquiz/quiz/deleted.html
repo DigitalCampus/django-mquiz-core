@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+{% if quiz %}
+	<h2>{{ title }}</h2>
+	{% blocktrans with quiz.title as qtitle%}
+	<p>'{{ qtitle }}' has now been deleted</p>
+	{% endblocktrans %}
+	<a href="{% url mquiz_manage %}">{% trans 'Return to your quizzes' %}</a>
+{% endif %}
+
+{% endblock content %}

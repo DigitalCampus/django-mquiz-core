@@ -44,7 +44,7 @@ def browse(request, letter='A'):
     return render(request, 'mquiz/browse.html', {'letters': letters, 'quizzes': quizzes })
 
 def manage_view(request):
-    quizzes = Quiz.objects.filter(owner=request.user).order_by('title')
+    quizzes = Quiz.objects.filter(owner=request.user,deleted=0).order_by('title')
     for q in quizzes:
         attempts = QuizAttempt.objects.filter(quiz=q)
         q.no_attempts = attempts.count()

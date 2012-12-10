@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+{% if quiz %}
+	<h2>{{ title }}</h2>
+	{% blocktrans with quiz.title as qtitle%}
+	<p>Are you sure you want to delete '{{ qtitle }}'?</p>
+	{% endblocktrans %}
+	<form action="" method="post" id="quizform">
+		{% csrf_token %}	
+		<input type="submit" value="{% trans 'Yes, delete this quiz' %}"/>
+		<input type="button" value="{% trans 'No, keep it' %}" onclick="history.back(1);"/>
+	</form>
+{% endif %}
+
+{% endblock content %}
