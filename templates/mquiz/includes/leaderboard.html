@@ -1,0 +1,15 @@
+{% load i18n %}
+<div id="newquizzes" class="homewidget">
+	<h3>{% trans 'home_leaderboard' %}</h3>
+    {% if leaderboard %}
+	<ol>
+    {% for quiz in leaderboard %}
+        <li><a href="{% url mquiz_mobile %}#{{ quiz.id }}">{{ quiz.title }}</a><br/>
+           <small>{% blocktrans with date=quiz.created_date|date:"d M Y" %}(added on {{ date }}){% endblocktrans %}</small>
+        </li>
+    {% endfor %}
+	</ol>
+    {% else %}
+    <p>No recent quizzes are available.</p>
+    {% endif %}
+</div>

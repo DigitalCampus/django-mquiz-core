@@ -1,0 +1,15 @@
+{% load i18n %}
+<div id="newquizzes" class="homewidget">
+	<h3>{% trans 'home_popular' %}</h3>
+    {% if popular_quiz_list %}
+	<ol>
+    {% for quiz in popular_quiz_list %}
+        <li><a href="{% url mquiz_mobile %}#{{ quiz.id }}">{{ quiz.title }}</a><br/>
+        	<small>(<a href='{% url mquiz_results_date quiz.id %}'>{{ quiz.num_attempts}} {% trans 'attempts' %}</a>)</small>
+        </li>
+    {% endfor %}
+	</ol>
+    {% else %}
+    <p>No recent quizzes are available.</p>
+    {% endif %}
+</div>
