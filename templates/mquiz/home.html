@@ -5,20 +5,20 @@
 <div id="start1" class="homestart">
 	<h3>{% trans 'home_step1' %}</h3>
 
-	<a href="quiz/new.php" title="Create your quiz now..."><img
+	<a href="{% url mquiz_create %}" title="Create your quiz now..."><img
 		src="/static/mquiz/images/mquiz-create.png" alt="create quiz"/> </a>
 
 </div>
 
 <div id="start2" class="homestart">
 	<h3>{% trans 'home_step2' %}</h3>
-	<iframe width="220" height="165"
-		src="http://www.youtube.com/embed/6WmWoTkQvZw"></iframe>
+	<a href="{% url mquiz_mobile %}#7" title="Create your quiz now...">
+	<img src="/static/mquiz/images/mquiz-quiz.png" alt="Take a quiz"/></a>
 </div>
 
 <div id="start3" class="homestart">
 	<h3>{% trans 'home_step3' %}</h3>
-	<a href="quiz/view.php?ref=qtAlex4ecb84e858a86&amp;view=question"><img
+	<a href="{% url mquiz_results_score 7 %}"><img
 		src="/static/mquiz/images/mquiz-results.png" alt="view results"/> </a>
 </div>
 
