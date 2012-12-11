@@ -43,9 +43,9 @@ def browse(request, letter='A'):
     letters = []
     for i in range(0,26):
         char = chr(ord('A')+i)
-        no_quizzes = Quiz.objects.filter(title__istartswith = char).count()
+        no_quizzes = Quiz.objects.filter(draft=0, deleted=0,title__istartswith = char).count()
         letters.append([char,no_quizzes])
-    quizzes = Quiz.objects.filter(title__istartswith = letter)
+    quizzes = Quiz.objects.filter(draft=0, deleted=0,title__istartswith = letter).order_by('title')
     return render(request, 'mquiz/browse.html', {'letters': letters, 'quizzes': quizzes })
 
 def manage_view(request):
