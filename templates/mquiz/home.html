@@ -5,21 +5,21 @@
 <div id="start1" class="homestart">
 	<h3>{% trans 'home_step1' %}</h3>
 
-	<a href="{% url mquiz_create %}" title="Create your quiz now..."><img
+	<a href="{% url mquiz_create %}" title="Create a quiz now..."><img
 		src="/static/mquiz/images/mquiz-create.png" alt="create quiz"/> </a>
 
 </div>
 
 <div id="start2" class="homestart">
 	<h3>{% trans 'home_step2' %}</h3>
-	<a href="{% url mquiz_mobile %}#7" title="Create your quiz now...">
+	<a href="{% url mquiz_mobile %}#7" title="Take a quiz...">
 	<img src="/static/mquiz/images/mquiz-quiz.png" alt="Take a quiz"/></a>
 </div>
 
 <div id="start3" class="homestart">
 	<h3>{% trans 'home_step3' %}</h3>
-	<a href="{% url mquiz_results_score 7 %}"><img
-		src="/static/mquiz/images/mquiz-results.png" alt="view results"/> </a>
+	<a href="{% url mquiz_results_score 7 %}" title="View quiz results..."><img
+		src="/static/mquiz/images/mquiz-results.png" alt="View results"/> </a>
 </div>
 
 <div style="clear:both;"></div>
