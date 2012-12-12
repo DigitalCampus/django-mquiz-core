@@ -126,7 +126,7 @@ def process_quiz(request,quiz,question_formset):
         question = Question()
         question.title = title
         question.type = type
-        question.owner = request.user
+        question.owner = quiz.owner
         question.save()
         
         question_maxscore = 0
@@ -138,7 +138,7 @@ def process_quiz(request,quiz,question_formset):
             question_maxscore = 1
             
         if needs_answers:
-            for i in range(1,4):
+            for i in range(1,5):
                 response = question_form.cleaned_data.get("response"+str(i)).strip()
                 r_score = question_form.cleaned_data.get("score"+str(i))
                 r_feedback = question_form.cleaned_data.get("feedback"+str(i)).strip()
@@ -146,7 +146,7 @@ def process_quiz(request,quiz,question_formset):
                     # TODO question type processing (for numerical questions only really)
                     # if numerical then split on tolerance
                     r = Response()
-                    r.owner = request.user
+                    r.owner = quiz.owner
                     r.question = question
                     r.score = r_score
                     r.title = response
