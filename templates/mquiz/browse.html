@@ -13,12 +13,27 @@
 {% endif %}
 
 {% if quizzes %}
+	<div id='th' class='quizlist'>
+		<div class='quiztitle'>{% trans 'table_header_quiz_title' %}</div>
+		<div class='quizattempts'>{% trans 'table_header_quiz_attempts' %}</div>
+		<div class='quizopts'>{% trans 'table_header_quiz_options' %}</div>
+	<div style='clear:both'></div>
+	</div>
 	{% for q in quizzes %}
 		<div class="quizlist">
+			<div class='quiztitle'>
 			<a href="{% url mquiz_mobile %}#{{ q.id }}">{{ q.title }}</a> 
 			{% if q.description %}
-				- {{ q.description }}
+				<br/><small>{{ q.description }}</small>
 			{% endif %}
+			</div>
+			<div class='quizattempts'>{{ q.no_attempts }}</div>
+			<div class='quizopts'>
+				{% if q.no_attempts > 0 %}
+					<a href="{% url mquiz_results_date q.id %}">{% trans 'quiz_options_detailed_results' %}</a>
+				{% endif %}
+			</div>
+			<div style='clear:both'></div>
 		</div>
 	{% endfor %}
 {% endif %}

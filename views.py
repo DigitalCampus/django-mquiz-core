@@ -45,7 +45,12 @@ def browse(request, letter='A'):
         char = chr(ord('A')+i)
         no_quizzes = Quiz.objects.filter(draft=0, deleted=0,title__istartswith = char).count()
         letters.append([char,no_quizzes])
+    # TODO - could this be done better by aggregating the quiz attempts?
     quizzes = Quiz.objects.filter(draft=0, deleted=0,title__istartswith = letter).order_by('title')
+    for q in quizzes:
+        attempts = QuizAttempt.objects.filter(quiz=q)
+        q.no_attempts = attempts.count()
+    
     return render(request, 'mquiz/browse.html', {'letters': letters, 'quizzes': quizzes })
 
 def manage_view(request):
