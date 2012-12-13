@@ -10,7 +10,7 @@ class LatestQuizzesFeed(Feed):
     description = "Latest quizzes created on mQuiz"
 
     def items(self):
-        return Quiz.objects.order_by('-created_date')[:10]
+        return Quiz.objects.filter(deleted=0,draft=0).order_by('-created_date')[:10]
 
     def item_title(self, item):
         return item.title

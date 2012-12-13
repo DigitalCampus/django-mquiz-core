@@ -13,7 +13,7 @@
 	
 			{% for k,v in data.items %}
 				data.setValue({{ forloop.counter0 }},0,'{{ k }}');
-				data.setValue({{ forloop.counter0 }},1,{{ v }});
+				data.setValue({{ forloop.counter0 }},1,{{ v|floatformat:2 }});
 			{% endfor %}
 	
 			var chart = new google.visualization.BarChart(document.getElementById('bar_div'));
