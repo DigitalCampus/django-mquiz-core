@@ -4,8 +4,10 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from datetime import datetime
 from tastypie.models import create_api_key
+from badges.receivers import quizattempt_callback, createquiz_callback, signup_callback
 
 models.signals.post_save.connect(create_api_key, sender=User)
+models.signals.post_save.connect(signup_callback, sender=User)
 
 class Question(models.Model):
     QUESTION_TYPES = (
@@ -99,6 +101,24 @@ class QuizAttempt(models.Model):
             percent = 0
         return percent
     
+    def is_first_attempt(self,user):
+        no_attempts = QuizAttempt.objects.filter(user=user,quiz=self.quiz).count()
+        is_first_attempt = False
+        if no_attempts == 1:
+            is_first_attempt = True
+        return is_first_attempt
+    
+    def is_first_attempt_today(self,user):
+        date = datetime.now()
+        day = date.strftime("%d")
+        month = date.strftime("%m")
+        year = date.strftime("%y")
+        no_attempts_today = QuizAttempt.objects.filter(user=user,quiz=self.quiz,submitted_date__day=day,submitted_date__month=month,submitted_date__year=year).count()
+        is_first_attempt_today = False
+        if no_attempts_today == 1:
+            is_first_attempt_today = True
+        return is_first_attempt_today
+        
 class QuizAttemptResponse(models.Model):
     quizattempt = models.ForeignKey(QuizAttempt)
     question = models.ForeignKey(Question)
@@ -111,4 +131,6 @@ class QuizAttemptResponse(models.Model):
         else:
             percent = 0
         return percent
-    
+  
+models.signals.post_save.connect(createquiz_callback, sender=Quiz)
+models.signals.post_save.connect(quizattempt_callback, sender=QuizAttempt)

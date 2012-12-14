@@ -13,11 +13,12 @@ from mquiz.models import Quiz, Question, Response, QuizAttempt, QuizAttemptRespo
 from forms import QuizForm, QuestionForm, BaseQuestionFormSet
 from django.utils.translation import ugettext as _
 from django.db.models import Count
+from badges.models import Points
 
 def home_view(request):
     latest_quiz_list = Quiz.objects.filter(draft=0,deleted=0).order_by('-created_date')[:10]
     popular_quiz_list = Quiz.objects.filter(draft=0,deleted=0).annotate(num_attempts=Count('quizattempt')).order_by('-num_attempts')[:10]
-    leaderboard = User.objects.raw("SELECT count( id ) AS no_attempts, user_id as id, AVG( (score *100 / maxscore) ) AS score_percent FROM mquiz_quizattempt WHERE maxscore !=0 GROUP BY user_id HAVING count( id ) >3 ORDER BY score_percent DESC LIMIT 0 , 10")
+    leaderboard = Points.get_leaderboard()
     return render_to_response('mquiz/home.html',
                               {'latest_quiz_list': latest_quiz_list,
                                'popular_quiz_list':popular_quiz_list,

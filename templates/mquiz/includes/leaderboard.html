@@ -4,9 +4,9 @@
     {% if leaderboard %}
 	<ol>
     {% for user in leaderboard %}
-        <li>{{ user.score_percent|floatformat:0 }} % - {{ user.first_name }} {{ user.last_name }}<br/>
-           <small>(from {{ user.no_attempts}} quiz attempts)</small>
-        </li>
+    	{% if user.total %}
+        	<li>{{ user.total }} - {{ user.first_name }} {{ user.last_name }}</li>
+        {% endif %}
     {% endfor %}
 	</ol>
     {% else %}
