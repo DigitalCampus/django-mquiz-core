@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from tastypie.models import ApiKey
+from badges.models import Points
 
 from forms import RegisterForm, ResetForm, ProfileForm
 
@@ -85,3 +86,7 @@ def edit(request):
                                     'api_key': key.key},request=request)
         
     return render(request, 'mquiz/profile/profile.html', {'form': form,})
+
+def points(request):
+    mypoints = Points.objects.filter(user=request.user).order_by('-date')[:50]
+    return render(request, 'mquiz/profile/points.html', {'mypoints': mypoints,})

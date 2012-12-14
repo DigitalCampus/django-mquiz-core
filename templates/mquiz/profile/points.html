@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<h2>{% trans 'page_title_points' %}</h2>
+
+{% if mypoints %}
+	<div class="quizlist">
+		<div class='quizcell'>{% trans 'table_header_points_date' %}</a></div>
+		<div class='quizcell'>{% trans 'table_header_points' %}</div>
+		<div class='quiztitle'>{% trans 'table_header_points_description' %}</div>
+		<div style='clear:both'></div>
+	</div>
+	{% for p in mypoints %}
+		<div class="quizlist">
+			<div class='quizcell'>{{ p.date|date:"H:m d M Y" }}</a></div>
+			<div class='quizcell'>{{ p.points }}</div>
+			<div class='quiztitle'>{{ p.description }}</div>
+			<div style='clear:both'></div>
+		</div>
+	{% endfor %}
+{% else %}
+	<p>You don't have any points yet</p>
+{% endif %}
+{% endblock %}

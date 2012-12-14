@@ -12,4 +12,5 @@ urlpatterns = patterns('',
     url(r'^reset/$', 'mquiz.profile.views.reset', name="profile_reset"),
     url(r'^reset/sent/$', direct_to_template, {"template": "mquiz/profile/reset-sent.html",}, name="profile_reset_sent"),
     url(r'^edit/$', 'mquiz.profile.views.edit', name="profile_edit"),
+    url(r'^points/$', 'mquiz.profile.views.points', name="profile_points"),
 )

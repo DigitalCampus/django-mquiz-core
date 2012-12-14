@@ -32,7 +32,7 @@
         {% if user.is_authenticated %}
             {% url django.contrib.auth.views.logout as url_logout %}
             {% url profile_edit as url_edit %}
-            <p>{% trans 'Welcome' %}, <a href="{{ url_edit }}">{{ user.first_name }}</a> <span class="points">{{ points }}</span> <a href="{{ url_logout }}">Logout</a></p>
+            <p>{% trans 'Welcome' %}, <a href="{{ url_edit }}">{{ user.first_name }}</a> <span class="points"><a href="{% url profile_points %}">{{ points }}</a></span> <a href="{{ url_logout }}">Logout</a></p>
         {% else %}
             {% url django.contrib.auth.views.login as url_login %}
             {% url profile_register as url_register %}
