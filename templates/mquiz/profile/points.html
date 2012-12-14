@@ -12,7 +12,7 @@
 	</div>
 	{% for p in mypoints %}
 		<div class="quizlist">
-			<div class='quizcell'>{{ p.date|date:"H:m d M Y" }}</a></div>
+			<div class='quizcell'>{{ p.date|date:"d M Y H:i" }}</a></div>
 			<div class='quizcell'>{{ p.points }}</div>
 			<div class='quiztitle'>{{ p.description }}</div>
 			<div style='clear:both'></div>

@@ -55,7 +55,7 @@ class QuestionForm(forms.Form):
             total_score = 0
             no_actual_responses = 0
             no_actual_scores = 0
-            for i in range(1,4):
+            for i in range(1,5):
                 response = cleaned_data.get("response"+str(i)).strip()
                 score = cleaned_data.get("score"+str(i))
                 if response != "":

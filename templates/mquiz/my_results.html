@@ -8,7 +8,7 @@
 		<div class="quizlist">
 			<div class='quiztitle'><a href="{% url mquiz_results_date r.quiz.id %}">{{ r.quiz.title }}</a></div>
 			<div class='quizcell'>{{ r.get_score_percent }}%</div>
-			<div class='quizcell'>{{ r.attempt_date|date:"H:m d M Y" }}</div>
+			<div class='quizcell'>{{ r.attempt_date|date:"H:i d M Y" }}</div>
 			<div style='clear:both'></div>
 		</div>
 	{% endfor %}
