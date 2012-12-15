@@ -5,7 +5,7 @@ from django.views.generic.simple import direct_to_template
 from tastypie.api import Api
 from mquiz.api.resources import QuizResource, UserResource, QuestionResource, RegisterResource, QuizAttemptResource
 from mquiz.api.resources import QuizQuestionResource, ResponseResource, QuizPropsResource
-from mquiz.feeds import LatestQuizzesFeed
+from mquiz.feeds import LatestQuizzesFeed, RecentActivityFeed
 
 v1_api = Api(api_name='v1')
 v1_api.register(UserResource())
@@ -39,6 +39,7 @@ urlpatterns = patterns('',
     url(r'^results/my/$', 'mquiz.quiz.reporting.my_results', name="mquiz_my_results"),
     url(r'^manage/$', 'mquiz.views.manage_view', name="mquiz_manage"), 
     url(r'^rss/latest/$', LatestQuizzesFeed(), name="mquiz_rss_latest"),
+    url(r'^rss/attempts/$', RecentActivityFeed(), name="mquiz_rss_attempts"),
     # TODO customise name (currently api_v1_top_level)
     url(r'^api/', include(v1_api.urls)),
 
