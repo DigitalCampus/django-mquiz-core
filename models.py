@@ -54,6 +54,22 @@ class Quiz(models.Model):
     def __unicode__(self):
         return self.title
     
+    def no_attempts(self):
+        no_attempts = QuizAttempt.objects.filter(quiz=self).count()
+        return no_attempts
+    
+    def avg_score(self):
+        # TODO - sure this could be tidied up
+        attempts = QuizAttempt.objects.filter(quiz=self)
+        total = 0
+        for a in attempts:
+            total = total + a.get_score_percent()
+        if self.no_attempts > 0:
+            avg_score = int(total/self.no_attempts())
+        else:
+            avg_score = 0
+        return avg_score
+    
 class QuizQuestion(models.Model):
     quiz = models.ForeignKey(Quiz)
     question = models.ForeignKey(Question)

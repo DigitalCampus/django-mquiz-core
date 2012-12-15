@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.utils.translation import ugettext as _
 from tastypie.models import ApiKey
 from badges.models import Points
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 from forms import RegisterForm, ResetForm, ProfileForm
 
@@ -88,5 +89,18 @@ def edit(request):
     return render(request, 'mquiz/profile/profile.html', {'form': form,})
 
 def points(request):
-    mypoints = Points.objects.filter(user=request.user).order_by('-date')[:50]
-    return render(request, 'mquiz/profile/points.html', {'mypoints': mypoints,})
+    points = Points.objects.filter(user=request.user).order_by('-date')
+    paginator = Paginator(points, 25) # Show 25 contacts per page
+
+    # Make sure page request is an int. If not, deliver first page.
+    try:
+        page = int(request.GET.get('page', '1'))
+    except ValueError:
+        page = 1
+
+    # If page request (9999) is out of range, deliver last page of results.
+    try:
+        mypoints = paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        mypoints = paginator.page(paginator.num_pages)
+    return render(request, 'mquiz/profile/points.html', {'page': mypoints,})

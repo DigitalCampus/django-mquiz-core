@@ -47,27 +47,25 @@ def browse(request, letter='A'):
         char = chr(ord('A')+i)
         no_quizzes = Quiz.objects.filter(draft=0, deleted=0,title__istartswith = char).count()
         letters.append([char,no_quizzes])
-    # TODO - could this be done better by aggregating the quiz attempts?
     quizzes = Quiz.objects.filter(draft=0, deleted=0,title__istartswith = letter).order_by('title')
-    for q in quizzes:
-        attempts = QuizAttempt.objects.filter(quiz=q)
-        q.no_attempts = attempts.count()
-    
     return render(request, 'mquiz/browse.html', {'letters': letters, 'quizzes': quizzes })
 
 def manage_view(request):
-    quizzes = Quiz.objects.filter(owner=request.user,deleted=0).order_by('title')
-    for q in quizzes:
-        attempts = QuizAttempt.objects.filter(quiz=q)
-        q.no_attempts = attempts.count()
-        total = 0
-        for a in attempts:
-            total = total + a.get_score_percent()
-        if q.no_attempts > 0:
-            q.avg_score = int(total/q.no_attempts)
-        else:
-            q.avg_score = 0
-    return render_to_response('mquiz/manage.html',{'quizzes':quizzes}, context_instance=RequestContext(request))
+    qzs = Quiz.objects.filter(owner=request.user,deleted=0).order_by('title')
+    paginator = Paginator(qzs, 25) # Show 25 contacts per page
+
+    # Make sure page request is an int. If not, deliver first page.
+    try:
+        page = int(request.GET.get('page', '1'))
+    except ValueError:
+        page = 1
+
+    # If page request (9999) is out of range, deliver last page of results.
+    try:
+        quizzes = paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        quizzes = paginator.page(paginator.num_pages)
+    return render_to_response('mquiz/manage.html',{'page':quizzes}, context_instance=RequestContext(request))
 
 def scoreboard_view(request):
     lb = Points.get_leaderboard()
@@ -85,4 +83,4 @@ def scoreboard_view(request):
     except (EmptyPage, InvalidPage):
         leaderboard = paginator.page(paginator.num_pages)
 
-    return render_to_response('mquiz/scoreboard.html',{'leaderboard':leaderboard}, context_instance=RequestContext(request))
+    return render_to_response('mquiz/scoreboard.html',{'page':leaderboard}, context_instance=RequestContext(request))
