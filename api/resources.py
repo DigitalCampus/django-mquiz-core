@@ -19,6 +19,7 @@ from django.conf.urls.defaults import url
 from django.core.paginator import Paginator, InvalidPage
 from django.db.models import Q
 from django.utils.translation import ugettext as _
+from badges.models import Points
 
 class QuizOwnerValidation(Validation):
     def is_valid(self, bundle, request=None):
@@ -280,11 +281,13 @@ class QuizPropsResource(ModelResource):
 
         
 class RegisterResource(ModelResource):
+    points = fields.IntegerField(readonly=True)
+    
     class Meta:
         queryset = User.objects.all()
         resource_name = 'register'
         allowed_methods = ['post']
-        fields = ['username', 'first_name','last_name','email']
+        fields = ['username', 'first_name','last_name','email','points']
         authorization = Authorization() 
         always_return_data = True 
         include_resource_uri = False
@@ -329,12 +332,15 @@ class RegisterResource(ModelResource):
         del bundle.data['lastname']
         return bundle   
  
+    def dehydrate_points(self,bundle):
+        points = Points.get_userscore(User.objects.get(username__exact=bundle.data['username']))
+        return points
+    
 class QuizAttemptResponseResource(ModelResource):
     question = fields.ForeignKey(QuestionResource, 'question')
     quizattempt = fields.ToOneField('mquiz.api.resources.QuizAttemptResource', 'quizattempt', related_name='quizattemptresponse')
     class Meta:
         queryset = QuizAttemptResponse.objects.all()
-        # TODO - better name?
         # TODO how to put slash in the name?
         resource_name = 'quizattemptresponse'
         allowed_methods = ['post']
@@ -345,13 +351,16 @@ class QuizAttemptResource(ModelResource):
     quiz = fields.ForeignKey(QuizResource, 'quiz')
     user = fields.ForeignKey(UserResource, 'user')
     responses = fields.ToManyField('mquiz.api.resources.QuizAttemptResponseResource', 'quizattemptresponse_set', related_name='quizattempt', full=True, null=True)
+    points = fields.IntegerField(readonly=True)
+    
     class Meta:
         queryset = QuizAttempt.objects.all()
         resource_name = 'quizattempt'
         allowed_methods = ['post']
         authentication = ApiKeyAuthentication()
         authorization = Authorization() 
-         
+        always_return_data = True 
+        
     def hydrate(self, bundle, request=None):
         # TODO - as extra check - check if the 'sent' param is false
         bundle.obj.user = User.objects.get(pk = bundle.request.user.id)
@@ -364,5 +373,9 @@ class QuizAttemptResource(ModelResource):
             # TODO should check that the question is actually in this quiz first
             # TODO what happens when the question has been deleted
             response['question'] = Question.objects.get(pk = response['question_id'])
-        return bundle 
+        return bundle
+     
+    def dehydrate_points(self,bundle):
+        points = Points.get_userscore(bundle.request.user)
+        return points
     
