@@ -14,11 +14,12 @@ from forms import QuizForm, QuestionForm, BaseQuestionFormSet
 from django.utils.translation import ugettext as _
 from django.db.models import Count
 from badges.models import Points
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 def home_view(request):
     latest_quiz_list = Quiz.objects.filter(draft=0,deleted=0).order_by('-created_date')[:10]
     popular_quiz_list = Quiz.objects.filter(draft=0,deleted=0).annotate(num_attempts=Count('quizattempt')).order_by('-num_attempts')[:10]
-    leaderboard = Points.get_leaderboard()
+    leaderboard = Points.get_leaderboard(20)
     return render_to_response('mquiz/home.html',
                               {'latest_quiz_list': latest_quiz_list,
                                'popular_quiz_list':popular_quiz_list,
@@ -68,3 +69,20 @@ def manage_view(request):
             q.avg_score = 0
     return render_to_response('mquiz/manage.html',{'quizzes':quizzes}, context_instance=RequestContext(request))
 
+def scoreboard_view(request):
+    lb = Points.get_leaderboard()
+    paginator = Paginator(lb, 25) # Show 25 contacts per page
+
+    # Make sure page request is an int. If not, deliver first page.
+    try:
+        page = int(request.GET.get('page', '1'))
+    except ValueError:
+        page = 1
+
+    # If page request (9999) is out of range, deliver last page of results.
+    try:
+        leaderboard = paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        leaderboard = paginator.page(paginator.num_pages)
+
+    return render_to_response('mquiz/scoreboard.html',{'leaderboard':leaderboard}, context_instance=RequestContext(request))

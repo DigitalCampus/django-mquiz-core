@@ -15,7 +15,6 @@ class Question(models.Model):
         ('shortanswer', 'Short answer'),
         ('matching', 'Matching'),
         ('numerical', 'Numerical'),
-        ('essay', 'Essay'),
         ('multiselect', 'Multiple select'),
         ('info', 'Information only'),
     )

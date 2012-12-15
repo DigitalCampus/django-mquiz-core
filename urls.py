@@ -21,6 +21,7 @@ urlpatterns = patterns('',
 
     url(r'^$', 'mquiz.views.home_view', name="mquiz_home"),
     url(r'^about/$', 'mquiz.views.about_view', name="mquiz_about"),
+    url(r'^scoreboard/$', 'mquiz.views.scoreboard_view', name="mquiz_scoreboard"),
     url(r'^terms/$', 'mquiz.views.terms_view', name="mquiz_terms"),
     url(r'^contact/$', 'mquiz.views.contact_view', name="mquiz_contact"),
     url(r'^quiz/(?P<quiz_id>\d+)/edit/$', 'mquiz.quiz.quiz.edit_quiz', name="mquiz_edit"),

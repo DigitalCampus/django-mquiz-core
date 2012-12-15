@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load display_functions %}
+{% block content %}
+<h2>{% trans 'page_title_scoreboard' %}</h2>
+
+{% if leaderboard %}
+	<div class="page_navigator">
+		{% if leaderboard.has_previous %}
+            <a href="?page={{ leaderboard.previous_page_number }}">&lt;&lt; {% trans 'previous' %}</a>
+        {% endif %}
+
+        <span class="current">
+            {% blocktrans with i=leaderboard.number x=leaderboard.paginator.num_pages %}Page {{ i }} of {{ x }}.{% endblocktrans %}
+        </span>
+
+        {% if leaderboard.has_next %}
+            <a href="?page={{ leaderboard.next_page_number }}">{% trans 'next' %} &gt;&gt;</a>
+        {% endif %}
+    </div> 
+       
+	{% for user in leaderboard.object_list %}
+		{% if user.total %}
+	       	<div class="leaderboard">
+	       		<div class="lbrank">{{ forloop.counter0|get_index:leaderboard.start_index }}</div>
+	       		<div class="lbpoints"><div class="points">{{ user.total }}</div></div>  
+	       		<div class="lbname">{{ user.first_name }} {{ user.last_name }}</div>
+	       		<div style="clear:both"></div>  	
+	       	</div>
+	    {% endif %}
+    {% endfor %}
+	    
+	<div class="page_navigator">
+		{% if leaderboard.has_previous %}
+            <a href="?page={{ leaderboard.previous_page_number }}">&lt;&lt; {% trans 'previous' %}</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ leaderboard.number }} of {{ leaderboard.paginator.num_pages }}.
+        </span>
+
+        {% if leaderboard.has_next %}
+            <a href="?page={{ leaderboard.next_page_number }}">{% trans 'next' %} &gt;&gt;</a>
+        {% endif %}
+     </div> 
+{% endif %}
+
+{% endblock %}

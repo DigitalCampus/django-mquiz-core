@@ -2,19 +2,16 @@
 <div id="newquizzes" class="homewidget">
 	<h3>{% trans 'home_leaderboard' %}</h3>
     {% if leaderboard %}
-	
-    {% for user in leaderboard %}
-    	{% if user.total %}
-        	<div class="leaderboard">
-        		<div class="leaderboardrank">{{ forloop.counter }}</div>
-        		<div class="leaderboardname">{{ user.first_name }} {{ user.last_name }}</div>
-        		<div class="leaderboardpoints"><div class="points">{{ user.total }}</div></div>       
-        		<div style="clear:both"></div>  	
-        	</div>
-        {% endif %}
-    {% endfor %}
-	
-    {% else %}
-    <p>No recent quizzes are available.</p>
+	    {% for user in leaderboard %}
+	    	{% if user.total %}
+	        	<div class="leaderboard">
+	        		<div class="leaderboardrank">{{ forloop.counter }}</div>
+	        		<div class="leaderboardname">{{ user.first_name }} {{ user.last_name }}</div>
+	        		<div class="leaderboardpoints"><div class="points">{{ user.total }}</div></div>       
+	        		<div style="clear:both"></div>  	
+	        	</div>
+	        {% endif %}
+	    {% endfor %}
     {% endif %}
+    <div class="homelink"><a href="{% url mquiz_scoreboard %}">{% trans "more..." %}</a></div>
 </div>
