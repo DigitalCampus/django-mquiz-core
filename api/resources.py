@@ -52,10 +52,11 @@ class ResponseOwnerValidation(Validation):
         return errors 
    
 class UserResource(ModelResource):
+    points = fields.IntegerField(readonly=True)
     class Meta:
         queryset = User.objects.all()
         resource_name = 'user'
-        fields = ['first_name', 'last_name', 'last_login','username']
+        fields = ['first_name', 'last_name', 'last_login','username','points']
         allowed_methods = ['post']
         authentication = Authentication()
         authorization = Authorization() 
@@ -84,6 +85,10 @@ class UserResource(ModelResource):
         bundle.data['api_key'] = key.key
         bundle.obj = u
         return bundle 
+    
+    def dehydrate_points(self,bundle):
+        points = Points.get_userscore(User.objects.get(username__exact=bundle.data['username']))
+        return points
         
           
 class QuizResource(ModelResource):
