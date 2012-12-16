@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from datetime import datetime
 from tastypie.models import create_api_key
-from badges.receivers import quizattempt_callback, createquiz_callback, signup_callback
+from badges.tasks import quizattempt_callback, createquiz_callback, signup_callback
 
 models.signals.post_save.connect(create_api_key, sender=User)
 models.signals.post_save.connect(signup_callback, sender=User)
