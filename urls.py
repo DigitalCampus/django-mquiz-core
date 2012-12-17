@@ -44,4 +44,7 @@ urlpatterns = patterns('',
     # TODO customise name (currently api_v1_top_level)
     url(r'^api/', include(v1_api.urls)),
 
+    # TODO temporary fix until all are upgraded
+    url(r'^api/tracker/$', 'mquiz.temp.tracker'),
+    url(r'^api/submit/$', 'mquiz.temp.submit'),
 )
