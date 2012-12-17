@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from datetime import datetime
 from tastypie.models import create_api_key
-from badges.tasks import quizattempt_callback, createquiz_callback, signup_callback
+from badges.signals import signup_callback, createquiz_callback, quizattempt_callback
 
 models.signals.post_save.connect(create_api_key, sender=User)
 models.signals.post_save.connect(signup_callback, sender=User)
@@ -23,6 +23,7 @@ class Question(models.Model):
     lastupdated_date = models.DateTimeField('date updated',default=datetime.now)
     title = models.TextField(blank=False)  
     type = models.CharField(max_length=15,choices=QUESTION_TYPES, default='multichoice') 
+    
     def __unicode__(self):
         return self.title
     
