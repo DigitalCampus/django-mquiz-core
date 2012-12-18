@@ -19,7 +19,7 @@ from django.conf.urls.defaults import url
 from django.core.paginator import Paginator, InvalidPage
 from django.db.models import Q
 from django.utils.translation import ugettext as _
-from badges.models import Points
+from badges.models import Points, Award
 
 class QuizOwnerValidation(Validation):
     def is_valid(self, bundle, request=None):
@@ -53,10 +53,12 @@ class ResponseOwnerValidation(Validation):
    
 class UserResource(ModelResource):
     points = fields.IntegerField(readonly=True)
+    badges = fields.IntegerField(readonly=True)
+    
     class Meta:
         queryset = User.objects.all()
         resource_name = 'user'
-        fields = ['first_name', 'last_name', 'last_login','username','points']
+        fields = ['first_name', 'last_name', 'last_login','username','points','badges']
         allowed_methods = ['post']
         authentication = Authentication()
         authorization = Authorization() 
@@ -89,7 +91,10 @@ class UserResource(ModelResource):
     def dehydrate_points(self,bundle):
         points = Points.get_userscore(User.objects.get(username__exact=bundle.data['username']))
         return points
-        
+    
+    def dehydrate_badges(self,bundle):
+        badges = Award.get_userawards(User.objects.get(username__exact=bundle.data['username']))
+        return badges 
           
 class QuizResource(ModelResource):
     questions = fields.ToManyField('mquiz.api.resources.QuizQuestionResource', 'quizquestion_set', related_name='quiz', full=True)
@@ -287,6 +292,7 @@ class QuizPropsResource(ModelResource):
         
 class RegisterResource(ModelResource):
     points = fields.IntegerField(readonly=True)
+    badges = fields.IntegerField(readonly=True)
     
     class Meta:
         queryset = User.objects.all()
@@ -341,6 +347,10 @@ class RegisterResource(ModelResource):
         points = Points.get_userscore(User.objects.get(username__exact=bundle.data['username']))
         return points
     
+    def dehydrate_badges(self,bundle):
+        badges = Award.get_userawards(User.objects.get(username__exact=bundle.data['username']))
+        return badges 
+    
 class QuizAttemptResponseResource(ModelResource):
     question = fields.ForeignKey(QuestionResource, 'question')
     quizattempt = fields.ToOneField('mquiz.api.resources.QuizAttemptResource', 'quizattempt', related_name='quizattemptresponse')
@@ -357,6 +367,7 @@ class QuizAttemptResource(ModelResource):
     user = fields.ForeignKey(UserResource, 'user')
     responses = fields.ToManyField('mquiz.api.resources.QuizAttemptResponseResource', 'quizattemptresponse_set', related_name='quizattempt', full=True, null=True)
     points = fields.IntegerField(readonly=True)
+    badges = fields.IntegerField(readonly=True)
     
     class Meta:
         queryset = QuizAttempt.objects.all()
@@ -383,4 +394,8 @@ class QuizAttemptResource(ModelResource):
     def dehydrate_points(self,bundle):
         points = Points.get_userscore(bundle.request.user)
         return points
+    
+    def dehydrate_badges(self,bundle):
+        badges = Award.get_userawards(bundle.request.user)
+        return badges
     
