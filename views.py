@@ -19,7 +19,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 def home_view(request):
     latest_quiz_list = Quiz.objects.filter(draft=0,deleted=0).order_by('-created_date')[:10]
     popular_quiz_list = Quiz.objects.filter(draft=0,deleted=0).annotate(num_attempts=Count('quizattempt')).order_by('-num_attempts')[:10]
-    leaderboard = Points.get_leaderboard(20)
+    leaderboard = Points.get_leaderboard(10)
     return render_to_response('mquiz/home.html',
                               {'latest_quiz_list': latest_quiz_list,
                                'popular_quiz_list':popular_quiz_list,

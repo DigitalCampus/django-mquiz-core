@@ -4,8 +4,10 @@
     {% if latest_quiz_list %}
 	<ol>
     {% for quiz in latest_quiz_list %}
-        <li><a href="{% url mquiz_mobile %}#{{ quiz.id }}">{{ quiz.title }}</a><br/>
-           <small>{% blocktrans with date=quiz.created_date|date:"d M Y" %}(added on {{ date }}){% endblocktrans %}</small>
+        <li><a href="{% url mquiz_mobile %}#{{ quiz.id }}">{{ quiz.title }}</a>
+        {% if quiz.description %}
+	        <br/><small>{{ quiz.description}}</small>
+        {% endif %}
         </li>
     {% endfor %}
 	</ol>
