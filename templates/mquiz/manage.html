@@ -14,7 +14,12 @@
 	</div>
 	{% for q in page.object_list %}
 		<div id='{{ q.id }}' class='quizlist'>
-			<div class='quiztitle'><a href="{% url mquiz_mobile %}#{{q.id }}">{{ q.title }}</a></div>
+			<div class='quiztitle'>
+				<a href="{% url mquiz_mobile %}#{{q.id }}">{{ q.title }}</a>
+				{% if q.description %}
+					<br/>{{ q.description }}
+				{% endif %}
+			</div>
 			<div class='quizattempts'>{{ q.no_attempts }}</div>
 			<div class='quizavg'>{% if q.no_attempts > 0 %} {{q.avg_score}}%{% else %}--{% endif %}</div>
 			<div class='quizopts'>
