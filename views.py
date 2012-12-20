@@ -68,7 +68,7 @@ def manage_view(request):
     return render_to_response('mquiz/manage.html',{'page':quizzes}, context_instance=RequestContext(request))
 
 def scoreboard_view(request):
-    lb = Points.get_leaderboard()
+    lb = Points.get_leaderboard()[:100]
     paginator = Paginator(lb, 25) # Show 25 contacts per page
 
     # Make sure page request is an int. If not, deliver first page.
