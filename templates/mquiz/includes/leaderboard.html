@@ -2,17 +2,17 @@
 <div id="newquizzes" class="homewidget">
 	<h3>{% trans 'home_leaderboard' %}</h3>
     {% if leaderboard %}
+    	<ol class="leaderboard">
 	    {% for user in leaderboard %}
 	    	{% if user.total %}
-	        	<div class="leaderboard">
-	        		<div class="leaderboardrank">{{ forloop.counter }}</div>
-	        		<div class="leaderboardname">{{ user.first_name }} {{ user.last_name }}</div>
-	        		<div class="leaderboardpoints"><span class="points" title="{{ user.total  }} {% trans "points" %}">{{ user.total }}</span>
-	        		<span class="badges" title="{{ user.badges }} {% trans "badges" %}"><img src="{{ STATIC_URL }}mquiz/images/badge.png" alt="{{ user.badges }} {% trans "badges" %}"/>{{ user.badges }}</span></div>       
-	        		<div style="clear:both"></div>  	
-	        	</div>
+        		<li>
+        		<div class="leaderboardname">{{ user.first_name }} {{ user.last_name }}</div>
+        		<div class="leaderboardpoints"><span class="points" title="{{ user.total  }} {% trans "points" %}">{{ user.total }}</span>
+        		<span class="badges" title="{{ user.badges }} {% trans "badges" %}"><img src="{{ STATIC_URL }}mquiz/images/badge.png" alt="{{ user.badges }} {% trans "badges" %}"/>{{ user.badges }}</span></div>       
+        		</li>	
 	        {% endif %}
 	    {% endfor %}
+	    </ol>
     {% endif %}
     <div class="homelink"><a href="{% url mquiz_scoreboard %}">{% trans "more..." %}</a></div>
 </div>
