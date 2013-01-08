@@ -34,7 +34,7 @@
             {% url profile_edit as url_edit %}
             <p>{% trans 'Welcome' %}, <a href="{{ url_edit }}">{{ user.first_name }}</a> 
             <span class="points" title="{{ points }} {% trans "points" %}"><a href="{% url profile_points %}">{{ points }}</a></span>
-            <span class="badges" title="{{ badges }} {% trans "badges" %}"><img src="{{ STATIC_URL }}mquiz/images/badge.png" alt="{{ badges }} {% trans "badges" %}"/>{{ badges }}</span> <a href="{{ url_logout }}">Logout</a></p>
+            <span class="badges" title="{{ badges }} {% trans "badges" %}"><a href="{% url profile_badges %}"><img src="{{ STATIC_URL }}mquiz/images/badge.png" alt="{{ badges }} {% trans "badges" %}"/>{{ badges }}</a></span> <a href="{{ url_logout }}">Logout</a></p>
         {% else %}
             {% url django.contrib.auth.views.login as url_login %}
             {% url profile_register as url_register %}

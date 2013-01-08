@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from tastypie.models import ApiKey
-from badges.models import Points
+from badges.models import Points,Award
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 from forms import RegisterForm, ResetForm, ProfileForm
@@ -104,3 +104,7 @@ def points(request):
     except (EmptyPage, InvalidPage):
         mypoints = paginator.page(paginator.num_pages)
     return render(request, 'mquiz/profile/points.html', {'page': mypoints,})
+
+def badges(request):
+    awards = Award.objects.filter(user=request.user).order_by('-award_date')
+    return render(request, 'mquiz/profile/badges.html', {'awards': awards,})
