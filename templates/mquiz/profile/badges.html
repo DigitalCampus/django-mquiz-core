@@ -6,7 +6,7 @@
 {% if awards %}
 	{% for b in awards %}
 		<div class="badge">
-		<img src="{{ MEDIA_URL }}{{ b.badge.icon }}" align="middle"/> 
+		<img src="{{ MEDIA_URL }}{{ b.badge.default_icon }}" align="middle"/> 
 		<div class="badge_data">{{ b.description }}<br/><small>{{ b.award_date }}</small></div>
 		<div style="clear:both"></div>
 		</div>
