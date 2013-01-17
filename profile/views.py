@@ -7,7 +7,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from tastypie.models import ApiKey
-from badges.models import Points,Award
+from badges.models import Points,Award, AwardModule
+from learning_modules.models import Module 
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 from forms import RegisterForm, ResetForm, ProfileForm
