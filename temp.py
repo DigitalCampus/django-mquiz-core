@@ -12,11 +12,13 @@ from django.core.mail import send_mail
 
 
 def tracker(request):
-    send_mail('mQuiz: Request to old Tracker api', 'Sent', 
+    data = request.POST.items()
+    send_mail('mQuiz: Request to old Tracker api', 'Sent:' + data, 
                       settings.SERVER_EMAIL, [settings.SERVER_EMAIL], fail_silently=True)
     return render_to_response('mquiz/temp.html')
 
 def submit(request):
-    send_mail('mQuiz: Request to old Submit api', 'Sent', 
+    data = request.POST.items()
+    send_mail('mQuiz: Request to old Submit api', 'Sent:' + data, 
                       settings.SERVER_EMAIL, [settings.SERVER_EMAIL], fail_silently=True)
     return render_to_response('mquiz/temp.html')
