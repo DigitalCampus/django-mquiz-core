@@ -33,6 +33,6 @@ def submit(request):
     for item,val in request.GET.items():
         data_str = data_str + " \n" + item + " : " + val
         
-    send_mail('mQuiz: Request to old Submit api', 'Sent:' + data, 
+    send_mail('mQuiz: Request to old Submit api', 'Sent:' + data_str, 
                       settings.SERVER_EMAIL, [settings.SERVER_EMAIL], fail_silently=True)
     return render_to_response('mquiz/temp.html')
