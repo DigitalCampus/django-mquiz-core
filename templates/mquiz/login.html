@@ -28,7 +28,7 @@
 			<a href="{% url profile_reset %}">{% trans 'forgotten_password' %}</a>	
 		</div>
 	</div>
-    <input type="hidden" name="next" value="{% url mquiz_home %}" />
+    <input type="hidden" name="next" value="{{ next }}" />
 </form>
 
 {% endblock %}

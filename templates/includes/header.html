@@ -39,7 +39,7 @@
         {% else %}
             {% url django.contrib.auth.views.login as url_login %}
             {% url profile_register as url_register %}
-            <p>{% blocktrans %}Welcome, please <a href="{{ url_login }}">Login</a> or <a href="{{ url_register }}">Register</a>{% endblocktrans %}</p>      
+            <p>{% blocktrans with request.path as rpath %}Welcome, please <a href="{{ url_login }}?next={{ rpath }}">Login</a> or <a href="{{ url_register }}">Register</a>{% endblocktrans %}</p>      
         {% endif %}
             
         </div>

@@ -27,4 +27,4 @@ work, ensure your TEMPLATE_CONTEXT_PROCESSORS setting includes\
         if not request.user.is_authenticated():
             path = request.path_info.lstrip('/')
             if not any(m.match(path) for m in EXEMPT_URLS):
-                return HttpResponseRedirect(settings.LOGIN_URL)
+                return HttpResponseRedirect('%s?next=%s' % (settings.LOGIN_URL, request.path) )
