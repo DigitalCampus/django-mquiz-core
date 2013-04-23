@@ -2,9 +2,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core import serializers
-from datetime import datetime
 from tastypie.models import create_api_key
 from badges.signals import signup_callback, createquiz_callback, quizattempt_callback
+import datetime
 
 models.signals.post_save.connect(create_api_key, sender=User)
 models.signals.post_save.connect(signup_callback, sender=User)
@@ -19,8 +19,8 @@ class Question(models.Model):
         ('info', 'Information only'),
     )
     owner = models.ForeignKey(User)
-    created_date = models.DateTimeField('date created',default=datetime.now)
-    lastupdated_date = models.DateTimeField('date updated',default=datetime.now)
+    created_date = models.DateTimeField('date created',default=datetime.datetime.now)
+    lastupdated_date = models.DateTimeField('date updated',default=datetime.datetime.now)
     title = models.TextField(blank=False)  
     type = models.CharField(max_length=15,choices=QUESTION_TYPES, default='multichoice') 
     
@@ -34,8 +34,8 @@ class Question(models.Model):
 class Response(models.Model):
     owner = models.ForeignKey(User)
     question = models.ForeignKey(Question)
-    created_date = models.DateTimeField('date created',default=datetime.now)
-    lastupdated_date = models.DateTimeField('date updated',default=datetime.now)
+    created_date = models.DateTimeField('date created',default=datetime.datetime.now)
+    lastupdated_date = models.DateTimeField('date updated',default=datetime.datetime.now)
     score = models.DecimalField(default=0,decimal_places=2, max_digits=6)
     title = models.TextField(blank=False)
     order = models.IntegerField(default=1)
@@ -44,8 +44,8 @@ class Response(models.Model):
     
 class Quiz(models.Model):
     owner = models.ForeignKey(User)
-    created_date = models.DateTimeField('date created',default=datetime.now)
-    lastupdated_date = models.DateTimeField('date updated',default=datetime.now)
+    created_date = models.DateTimeField('date created',default=datetime.datetime.now)
+    lastupdated_date = models.DateTimeField('date updated',default=datetime.datetime.now)
     draft = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
     title = models.TextField(blank=False)
@@ -103,8 +103,8 @@ class ResponseProps(models.Model):
 class QuizAttempt(models.Model):
     user = models.ForeignKey(User)
     quiz = models.ForeignKey(Quiz)
-    attempt_date = models.DateTimeField('date attempted',default=datetime.now)
-    submitted_date = models.DateTimeField('date submitted',default=datetime.now)
+    attempt_date = models.DateTimeField('date attempted',default=datetime.datetime.now)
+    submitted_date = models.DateTimeField('date submitted',default=datetime.datetime.now)
     score = models.DecimalField(decimal_places=2, max_digits=6)
     maxscore = models.DecimalField(decimal_places=2, max_digits=6)
     ip = models.IPAddressField()
@@ -117,23 +117,20 @@ class QuizAttempt(models.Model):
             percent = 0
         return percent
     
-    def is_first_attempt(self,user):
-        no_attempts = QuizAttempt.objects.filter(user=user,quiz=self.quiz).count()
-        is_first_attempt = False
+    def is_first_attempt(self):
+        no_attempts = QuizAttempt.objects.filter(user=self.user,quiz=self.quiz).count()
         if no_attempts == 1:
-            is_first_attempt = True
-        return is_first_attempt
+            return True
+        else:
+            return False
     
-    def is_first_attempt_today(self,user):
-        date = datetime.now()
-        day = date.strftime("%d")
-        month = date.strftime("%m")
-        year = date.strftime("%y")
-        no_attempts_today = QuizAttempt.objects.filter(user=user,quiz=self.quiz,submitted_date__day=day,submitted_date__month=month,submitted_date__year=year).count()
-        is_first_attempt_today = False
+    def is_first_attempt_today(self):    
+        olddate = datetime.datetime.now() + datetime.timedelta(hours=-24)
+        no_attempts_today = QuizAttempt.objects.filter(user=self.user,quiz=self.quiz,submitted_date__gte=olddate).count()
         if no_attempts_today == 1:
-            is_first_attempt_today = True
-        return is_first_attempt_today
+            return True
+        else:
+            return False
         
 class QuizAttemptResponse(models.Model):
     quizattempt = models.ForeignKey(QuizAttempt)
