@@ -167,6 +167,13 @@ class QuizAttempt(models.Model):
         else:
             return False
         
+    def get_quiz_digest(self):
+        qp = QuizProps.objects.filter(quiz=self.quiz,name='digest')
+        if qp.count() == 1:
+            return qp[0].value
+        else:
+            return None
+        
 class QuizAttemptResponse(models.Model):
     quizattempt = models.ForeignKey(QuizAttempt)
     question = models.ForeignKey(Question)
