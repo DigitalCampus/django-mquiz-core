@@ -267,7 +267,7 @@ class QuizPropsResource(ModelResource):
         self.throttle_check(request)
         
         digest = kwargs.pop('digest', None)
-        quizprop = self._meta.queryset.filter(name = 'digest').filter(value=digest)
+        quizprop = self._meta.queryset.filter(name = 'digest',quiz__deleted=0,quiz__draft=0).filter(value=digest)
         paginator = Paginator(quizprop, 20)
 
         try:
