@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from tastypie.models import create_api_key
 from badges.signals import signup_callback, createquiz_callback, quizattempt_callback
+from django.utils.translation import ugettext_lazy as _
 import datetime
 
 models.signals.post_save.connect(create_api_key, sender=User)
@@ -24,6 +25,10 @@ class Question(models.Model):
     title = models.TextField(blank=False)  
     type = models.CharField(max_length=15,choices=QUESTION_TYPES, default='multichoice') 
     
+    class Meta:
+        verbose_name = _('Question')
+        verbose_name_plural = _('Questions')
+        
     def __unicode__(self):
         return self.title
     
@@ -39,6 +44,11 @@ class Response(models.Model):
     score = models.DecimalField(default=0,decimal_places=2, max_digits=6)
     title = models.TextField(blank=False)
     order = models.IntegerField(default=1)
+    
+    class Meta:
+        verbose_name = _('Response')
+        verbose_name_plural = _('Responses')
+        
     def __unicode__(self):
         return self.title
     
@@ -52,6 +62,10 @@ class Quiz(models.Model):
     description = models.TextField(blank=True)
     questions = models.ManyToManyField(Question, through='QuizQuestion')
     
+    class Meta:
+        verbose_name = _('Quiz')
+        verbose_name_plural = _('Quizzes')
+        
     def __unicode__(self):
         return self.title
     
@@ -75,12 +89,20 @@ class QuizQuestion(models.Model):
     quiz = models.ForeignKey(Quiz)
     question = models.ForeignKey(Question)
     order = models.IntegerField(default=1)
+    
+    class Meta:
+        verbose_name = _('QuizQuestion')
+        verbose_name_plural = _('QuizQuestions')
 
 class QuizProps(models.Model):
     quiz = models.ForeignKey(Quiz)
     name = models.CharField(max_length=200)
     value = models.TextField(blank=True)
     
+    class Meta:
+        verbose_name = _('QuizProp')
+        verbose_name_plural = _('QuizProps')
+        
     def __unicode__(self):
         return self.name
     
@@ -89,6 +111,10 @@ class QuestionProps(models.Model):
     name = models.CharField(max_length=200)
     value = models.TextField(blank=True)
     
+    class Meta:
+        verbose_name = _('QuestionProp')
+        verbose_name_plural = _('QuestionProps')
+        
     def __unicode__(self):
         return self.name
     
@@ -97,6 +123,10 @@ class ResponseProps(models.Model):
     name = models.CharField(max_length=200)
     value = models.TextField(blank=True)
     
+    class Meta:
+        verbose_name = _('ResponsenProp')
+        verbose_name_plural = _('ResponseProps')
+        
     def __unicode__(self):
         return self.name
     
@@ -111,6 +141,10 @@ class QuizAttempt(models.Model):
     instance_id = models.CharField(max_length=50,null=True,blank=True)
     agent = models.TextField(blank=True)
     
+    class Meta:
+        verbose_name = _('QuizAttempt')
+        verbose_name_plural = _('QuizAttempts')
+        
     def get_score_percent(self):
         if self.maxscore > 0:
             percent = int(round(self.score * 100 / self.maxscore))
@@ -139,6 +173,10 @@ class QuizAttemptResponse(models.Model):
     score = models.DecimalField(decimal_places=2, max_digits=6)
     text = models.TextField(blank=True)
     
+    class Meta:
+        verbose_name = _('QuizAttemptResponse')
+        verbose_name_plural = _('QuizAttemptResponses')
+        
     def get_score_percent(self):
         if self.question.get_maxscore() > 0:
             percent = int(round(float(self.score) * 100 / self.question.get_maxscore()))
