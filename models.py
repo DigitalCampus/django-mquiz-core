@@ -108,6 +108,7 @@ class QuizAttempt(models.Model):
     score = models.DecimalField(decimal_places=2, max_digits=6)
     maxscore = models.DecimalField(decimal_places=2, max_digits=6)
     ip = models.IPAddressField()
+    instance_id = models.CharField(max_length=50,null=True,blank=True)
     agent = models.TextField(blank=True)
     
     def get_score_percent(self):
