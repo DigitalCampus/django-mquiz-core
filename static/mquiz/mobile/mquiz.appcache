@@ -1,0 +1,15 @@
+CACHE MANIFEST
+# v16
+
+CACHE:
+/static/mquiz/mobile/mquiz-core.css
+/static/mquiz/mobile/mquiz-local.css
+/static/mquiz/mobile/mquiz.js
+/static/mquiz/mobile/mquizengine.js
+/static/mquiz/mobile/dateformat.js
+/static/mquiz/mobile/lib/flotr2.min.js
+/static/mquiz/mobile/lib/jquery-1.7.1.min.js
+/static/mquiz/mobile/lib/jquery.validate.min.js
+/static/mquiz/mobile/lib/jquery-ui-1.8.19.custom.min.js
+/static/mquiz/images/dclogo.png
+/static/mquiz/images/badge.png
