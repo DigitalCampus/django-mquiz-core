@@ -26,20 +26,7 @@ def home_view(request):
                                'leaderboard': leaderboard,}, 
                               context_instance=RequestContext(request))
 
-def about_view(request):
-    return render_to_response('mquiz/about.html', 
-                              {'settings': settings},
-                              context_instance=RequestContext(request))
 
-def contact_view(request):
-        return render_to_response('mquiz/contact.html', 
-                                  {'settings': settings},
-                                  context_instance=RequestContext(request))
-        
-def terms_view(request):
-        return render_to_response('mquiz/terms.html', 
-                                  {'settings': settings},
-                                  context_instance=RequestContext(request))
                      
 def browse(request, letter='A'):
     letters = []

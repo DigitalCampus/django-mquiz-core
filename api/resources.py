@@ -1,5 +1,4 @@
 # mquiz/api/resources.py
-# TODO - tidy these imports
 from django.contrib.auth.models import User
 from django.contrib.auth import (authenticate, login)
 from tastypie import fields, bundle
@@ -14,7 +13,6 @@ from mquiz.api.serializers import PrettyJSONSerializer, QuizJSONSerializer, User
 from tastypie.validation import Validation
 from django.db import IntegrityError
 from tastypie.models import ApiKey
-from mquiz.profile.forms import RegisterForm
 from django.conf.urls.defaults import url
 from django.core.paginator import Paginator, InvalidPage
 from django.db.models import Q
