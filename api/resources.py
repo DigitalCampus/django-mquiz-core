@@ -1,5 +1,4 @@
 # mquiz/api/resources.py
-# TODO - tidy these imports
 from django.contrib.auth.models import User
 from django.contrib.auth import (authenticate, login)
 from tastypie import fields, bundle
@@ -151,7 +150,6 @@ class QuizResource(ModelResource):
     
         
 class QuizQuestionResource(ModelResource):
-    #quiz = fields.ToOneField('mquiz_api.resources.QuizResource', 'quiz', full=True)
     question = fields.ToOneField('mquiz.api.resources.QuestionResource', 'question', full=True)
     class Meta:
         queryset = QuizQuestion.objects.all()
