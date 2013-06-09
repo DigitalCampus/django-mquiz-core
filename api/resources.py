@@ -1,6 +1,6 @@
 # mquiz/api/resources.py
 from django.contrib.auth.models import User
-from django.contrib.auth import (authenticate, login)
+from django.contrib.auth import authenticate, login
 from tastypie import fields, bundle
 from tastypie.resources import ModelResource
 from tastypie.authentication import Authentication, ApiKeyAuthentication
@@ -64,7 +64,7 @@ class UserResource(ModelResource):
         serializer = UserJSONSerializer()
         always_return_data = True       
     
-    def obj_create(self, bundle, request=None, **kwargs):
+    def obj_create(self, bundle, **kwargs):
         username = bundle.data['username']
         password = bundle.data['password']
         if not username or not password:
@@ -73,7 +73,7 @@ class UserResource(ModelResource):
         u = authenticate(username=username, password=password)
         if u is not None:
             if u.is_active:
-                login(request, u)
+                login(bundle.request,u)
             else:
                 # TODO - should raise 401 error
                 raise BadRequest(_(u'Authentication failure'))
