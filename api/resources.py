@@ -114,7 +114,7 @@ class QuizResource(ModelResource):
         bundle.obj.owner = User.objects.get(pk = bundle.request.user.id)
         return bundle 
     
-    def override_urls(self):
+    def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/search/$" % self._meta.resource_name, self.wrap_view('get_search'), name="api_get_search"),
         ]
@@ -254,7 +254,7 @@ class QuizPropsResource(ModelResource):
     
     # use this for filtering on the digest prop of a quiz to determine if it already exists
     # to avoid recreating the same quiz over and over
-    def override_urls(self):
+    def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/(?P<digest>[\w\d_.-]+)/$" % self._meta.resource_name, self.wrap_view('digest_detail'), name="api_digest_detail"),
         ]
