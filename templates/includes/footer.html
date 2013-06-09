@@ -1,9 +1,9 @@
 {% load i18n %}
 <div id="footer">
         <ul>
-        <li><a href="{% url mquiz_about %}">{% trans 'footer_about' %}</a></li>
-        <li><a href="{% url mquiz_terms %}">{% trans 'footer_terms' %}</a></li>
-        <li><a href="{% url mquiz_contact %}">{% trans 'footer_contact' %}</a></li>
+        <li><a href="{% url 'mquiz_about' %}">{% trans 'footer_about' %}</a></li>
+        <li><a href="{% url 'mquiz_terms' %}">{% trans 'footer_terms' %}</a></li>
+        <li><a href="{% url 'mquiz_contact' %}">{% trans 'footer_contact' %}</a></li>
         <li>Alex Little &copy; {% now "Y" %}</li>
         </ul>
 </div>

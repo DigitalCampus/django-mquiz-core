@@ -22,7 +22,7 @@
 	{% for q in quizzes %}
 		<div class="quizlist">
 			<div class='quiztitle'>
-			<a href="{% url mquiz_mobile %}#{{ q.id }}">{{ q.title }}</a> 
+			<a href="{% url 'mquiz_mobile' %}#{{ q.id }}">{{ q.title }}</a> 
 			{% if q.description %}
 				<br/><small>{{ q.description }}</small>
 			{% endif %}
@@ -30,7 +30,7 @@
 			<div class='quizattempts'>{{ q.no_attempts }}</div>
 			<div class='quizopts'>
 				{% if q.no_attempts > 0 %}
-					<a href="{% url mquiz_results_date q.id %}">{% trans 'quiz_options_detailed_results' %}</a>
+					<a href="{% url 'mquiz_results_date' q.id %}">{% trans 'quiz_options_detailed_results' %}</a>
 				{% endif %}
 			</div>
 			<div style='clear:both'></div>

@@ -7,7 +7,7 @@
 
 {% include "includes/messages.html" %}	
 
-<form action="{% url profile_edit %}" method="post">{% csrf_token %}
+<form action="{% url 'profile_edit' %}" method="post">{% csrf_token %}
     <div class="errorWrapper">{{ form.non_field_errors }}</div>
     <div class="fieldWrapper">
         <div class="fieldErrorWrapper">{{ form.username.errors }}</div>

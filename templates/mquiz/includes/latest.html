@@ -4,7 +4,7 @@
     {% if latest_quiz_list %}
 	<ol>
     {% for quiz in latest_quiz_list %}
-        <li><a href="{% url mquiz_mobile %}#{{ quiz.id }}">{{ quiz.title }}</a>
+        <li><a href="{% url 'mquiz_mobile' %}#{{ quiz.id }}">{{ quiz.title }}</a>
         {% if quiz.description %}
 	        <br/><small>{{ quiz.description}}</small>
         {% endif %}

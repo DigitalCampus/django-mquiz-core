@@ -7,7 +7,7 @@
 	{% blocktrans with quiz.title as qtitle%}
 	<p>'{{ qtitle }}' has now been deleted</p>
 	{% endblocktrans %}
-	<a href="{% url mquiz_manage %}">{% trans 'Return to your quizzes' %}</a>
+	<a href="{% url 'mquiz_manage' %}">{% trans 'Return to your quizzes' %}</a>
 {% endif %}
 
 {% endblock content %}

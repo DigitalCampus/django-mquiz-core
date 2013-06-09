@@ -15,7 +15,7 @@
 	{% for q in page.object_list %}
 		<div id='{{ q.id }}' class='quizlist'>
 			<div class='quiztitle'>
-				<a href="{% url mquiz_mobile %}#{{q.id }}">{{ q.title }}</a>
+				<a href="{% url 'mquiz_mobile' %}#{{q.id }}">{{ q.title }}</a>
 				{% if q.description %}
 					<br/>{{ q.description }}
 				{% endif %}
@@ -24,11 +24,11 @@
 			<div class='quizavg'>{% if q.no_attempts > 0 %} {{q.avg_score}}%{% else %}--{% endif %}</div>
 			<div class='quizopts'>
 				{% if q.no_attempts == 0 %}
-					<a href="{% url mquiz_edit q.id %}">{% trans 'quiz_options_edit' %}</a>
+					<a href="{% url 'mquiz_edit' q.id %}">{% trans 'quiz_options_edit' %}</a>
 				{% endif %}
-				<a href="{% url mquiz_delete q.id %}">{% trans 'quiz_options_delete' %}</a>
+				<a href="{% url 'mquiz_delete' q.id %}">{% trans 'quiz_options_delete' %}</a>
 				{% if q.no_attempts > 0 %}
-					<a href="{% url mquiz_results_attempts q.id %}">{% trans 'quiz_options_detailed_results' %}</a>
+					<a href="{% url 'mquiz_results_attempts' q.id %}">{% trans 'quiz_options_detailed_results' %}</a>
 				{% endif %}
 			</div>
 			<div style='clear:both'></div>
@@ -36,7 +36,7 @@
 	{% endfor %}
 	{% include "mquiz/includes/page_navigator.html" %}
 {% else %}
-	{% url mquiz_create as url_create %}
+	{% url 'mquiz_create' as url_create %}
 	{% blocktrans %}
 		<p>You haven't created any quizzes yet. Why not <a href="{{ url_create }}">create one</a>?</p>
 	{% endblocktrans %}

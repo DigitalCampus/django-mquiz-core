@@ -1,14 +1,14 @@
 {% load i18n %}
 <h2>{% trans 'page_title_quiz_results' %}: {{ quiz.title }}</h2>
 <p>
-	<a href="{% url mquiz_results_date quiz.id %}">
+	<a href="{% url 'mquiz_results_date' quiz.id %}">
 		{% trans 'results_by_date' %}</a> | 
-	<a href="{% url mquiz_results_score quiz.id %}">
+	<a href="{% url 'mquiz_results_score' quiz.id %}">
 		{% trans 'results_score_dist' %}</a> |
-	<a href="{% url mquiz_results_questions quiz.id %}">
+	<a href="{% url 'mquiz_results_questions' quiz.id %}">
 		{% trans 'results_by_question' %}</a>
 	{% if quiz.owner == user %}
-	| <a href="{% url mquiz_results_attempts quiz.id %}">
+	| <a href="{% url 'mquiz_results_attempts' quiz.id %}">
 		{% trans 'results_by_attempts' %}</a>
 	{% endif %}
 </p>
