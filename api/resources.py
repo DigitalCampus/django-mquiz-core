@@ -301,7 +301,7 @@ class RegisterResource(ModelResource):
         always_return_data = True 
         include_resource_uri = False
          
-    def obj_create(self, bundle, request=None, **kwargs):
+    def obj_create(self, bundle, **kwargs):
         data = { 'username': bundle.data['username'],
                 'password': bundle.data['password'],
                 'password_again': bundle.data['passwordagain'],
