@@ -37,7 +37,7 @@ class QuizJSONSerializer(Serializer):
         if 'questions' in data:
             self.format_quiz(data)
         
-        return json.dumps(data, sort_keys=True, ensure_ascii=False)
+        return json.dumps(data, sort_keys=True, ensure_ascii=False,  indent=self.json_indent)
         
     def format_quiz(self, data):
         

@@ -20,13 +20,12 @@ from django.db.models import Q
 from django.utils.translation import ugettext as _
 from badges.models import Points, Award
 
-'''class QuizOwnerValidation(Validation):
+class QuizOwnerValidation(Validation):
     def is_valid(self, bundle, request=None):
         if not bundle.data:
             return {'__all__': 'no data.'}
         errors = {}
-        #quiz = QuizResource().get_via_uri(bundle.data['quiz'])
-        quiz = QuizResource().get_via_uri(bundle.request.quiz)
+        quiz = bundle.obj.quiz
         if quiz.owner.id != bundle.request.user.id:
             errors['error_message'] = _(u"You are not the owner of this quiz")
         return errors
@@ -36,7 +35,7 @@ class QuestionOwnerValidation(Validation):
         if not bundle.data:
             return {'__all__': 'no data.'}
         errors = {}
-        question = QuestionResource().get_via_uri(bundle.data['question'])
+        question = bundle.obj.question
         if question.owner.id != bundle.request.user.id:
             errors['error_message'] = _(u"You are not the owner of this question")
         return errors
@@ -46,10 +45,10 @@ class ResponseOwnerValidation(Validation):
         if not bundle.data:
             return {'__all__': 'no data.'}
         errors = {}
-        response = ResponseResource().get_via_uri(bundle.data['response'])
+        response = bundle.obj.response
         if response.owner.id != bundle.request.user.id:
             errors['error_message'] = _(u"You are not the owner of this response")
-        return errors '''
+        return errors
    
 class UserResource(ModelResource):
     points = fields.IntegerField(readonly=True)
@@ -159,7 +158,7 @@ class QuizQuestionResource(ModelResource):
         include_resource_uri = False
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
-        #validation = QuizOwnerValidation()
+        validation = QuizOwnerValidation()
         always_return_data = True
       
     def hydrate(self, bundle, request=None):
@@ -178,7 +177,6 @@ class QuestionResource(ModelResource):
         include_resource_uri = True
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
-        # TODO - format better to show responses/props as in QuizResource
         always_return_data = True
 
     def hydrate(self, bundle, request=None):
@@ -190,13 +188,11 @@ class QuestionPropsResource(ModelResource):
     class Meta:
         queryset = QuestionProps.objects.all()
         allowed_methods = ['get','post']
-        fields = ['name', 'value']
-        # TODO how to put slash in the name?
         resource_name = 'questionprops'
         include_resource_uri = False
         authentication = ApiKeyAuthentication()  
         authorization = Authorization()
-        #validation = QuestionOwnerValidation()
+        validation = QuestionOwnerValidation()
         always_return_data = True
  
     
@@ -212,7 +208,7 @@ class ResponseResource(ModelResource):
         serializer = PrettyJSONSerializer()
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
-        #validation = QuestionOwnerValidation()
+        validation = QuestionOwnerValidation()
         always_return_data = True
         
     def hydrate(self, bundle, request=None):
@@ -225,12 +221,11 @@ class ResponsePropsResource(ModelResource):
         queryset = ResponseProps.objects.all()
         allowed_methods = ['get','post']
         fields = ['name', 'value']
-        # TODO how to put slash in the name?
         resource_name = 'responseprops'
         include_resource_uri = False
         authentication = ApiKeyAuthentication()  
         authorization = Authorization()
-        #validation = ResponseOwnerValidation()
+        validation = ResponseOwnerValidation()
         always_return_data = True            
 
            
@@ -239,18 +234,16 @@ class QuizPropsResource(ModelResource):
     class Meta:
         queryset = QuizProps.objects.all()
         allowed_methods = ['get','post']
-        fields = ['name', 'value']
-        # TODO how to put slash in the name?
         resource_name = 'quizprops'
-        include_resource_uri = False
+        include_resource_uri = True
         authentication = ApiKeyAuthentication()  
         authorization = Authorization()
-        #validation = QuizOwnerValidation()
+        validation = QuizOwnerValidation()
         always_return_data = True
-   
+    
     # add the quiz_id into the bundle
     def dehydrate(self, bundle, request=None):
-        bundle.data['quiz_id'] = QuizResource().get_via_uri(bundle.data['quiz']).id
+        bundle.data['quiz_id'] = QuizResource().get_via_uri(bundle.data['quiz']).id 
         return bundle
     
     # use this for filtering on the digest prop of a quiz to determine if it already exists

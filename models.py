@@ -124,7 +124,7 @@ class ResponseProps(models.Model):
     value = models.TextField(blank=True)
     
     class Meta:
-        verbose_name = _('ResponsenProp')
+        verbose_name = _('ResponseProp')
         verbose_name_plural = _('ResponseProps')
         
     def __unicode__(self):
