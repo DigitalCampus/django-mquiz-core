@@ -20,12 +20,13 @@ from django.db.models import Q
 from django.utils.translation import ugettext as _
 from badges.models import Points, Award
 
-class QuizOwnerValidation(Validation):
+'''class QuizOwnerValidation(Validation):
     def is_valid(self, bundle, request=None):
         if not bundle.data:
             return {'__all__': 'no data.'}
         errors = {}
-        quiz = QuizResource().get_via_uri(bundle.data['quiz'])
+        #quiz = QuizResource().get_via_uri(bundle.data['quiz'])
+        quiz = QuizResource().get_via_uri(bundle.request.quiz)
         if quiz.owner.id != bundle.request.user.id:
             errors['error_message'] = _(u"You are not the owner of this quiz")
         return errors
@@ -48,7 +49,7 @@ class ResponseOwnerValidation(Validation):
         response = ResponseResource().get_via_uri(bundle.data['response'])
         if response.owner.id != bundle.request.user.id:
             errors['error_message'] = _(u"You are not the owner of this response")
-        return errors 
+        return errors '''
    
 class UserResource(ModelResource):
     points = fields.IntegerField(readonly=True)
@@ -158,7 +159,7 @@ class QuizQuestionResource(ModelResource):
         include_resource_uri = False
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
-        validation = QuizOwnerValidation()
+        #validation = QuizOwnerValidation()
         always_return_data = True
       
     def hydrate(self, bundle, request=None):
@@ -195,7 +196,7 @@ class QuestionPropsResource(ModelResource):
         include_resource_uri = False
         authentication = ApiKeyAuthentication()  
         authorization = Authorization()
-        validation = QuestionOwnerValidation()
+        #validation = QuestionOwnerValidation()
         always_return_data = True
  
     
@@ -211,7 +212,7 @@ class ResponseResource(ModelResource):
         serializer = PrettyJSONSerializer()
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
-        validation = QuestionOwnerValidation()
+        #validation = QuestionOwnerValidation()
         always_return_data = True
         
     def hydrate(self, bundle, request=None):
@@ -229,7 +230,7 @@ class ResponsePropsResource(ModelResource):
         include_resource_uri = False
         authentication = ApiKeyAuthentication()  
         authorization = Authorization()
-        validation = ResponseOwnerValidation()
+        #validation = ResponseOwnerValidation()
         always_return_data = True            
 
            
@@ -244,7 +245,7 @@ class QuizPropsResource(ModelResource):
         include_resource_uri = False
         authentication = ApiKeyAuthentication()  
         authorization = Authorization()
-        validation = QuizOwnerValidation()
+        #validation = QuizOwnerValidation()
         always_return_data = True
    
     # add the quiz_id into the bundle
